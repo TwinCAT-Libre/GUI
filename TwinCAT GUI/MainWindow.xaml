@@ -40,7 +40,12 @@
             <TabControl >
                 <TabItem Header="Connection">
                     <Grid Background="#FFE5E5E5">
-                        <TextBox HorizontalAlignment="Left" Margin="262,48,0,0" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="55*"/>
+                            <ColumnDefinition Width="342*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox HorizontalAlignment="Left" Margin="152,48,0,0" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Grid.Column="1"/>
+                        <Button Content="Connect" HorizontalAlignment="Left" Margin="108,60,0,0" VerticalAlignment="Top" Width="111" Grid.ColumnSpan="2" Click="Button_Click"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Symbols">
