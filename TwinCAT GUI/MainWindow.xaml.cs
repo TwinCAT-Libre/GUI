@@ -85,9 +85,6 @@ namespace TwinCAT_GUI
 
                 ISymbolLoader loader = SymbolLoaderFactory.Create(adsClient, SymbolLoaderSettings.Default);
 
-                //IAmsRouter routerRoutes = RouteCollection
-                //adsRouter.
-
                 foreach (Symbol symbol in loader.Symbols)
                 {
                     //lists all GVLs and POUs
@@ -135,50 +132,12 @@ namespace TwinCAT_GUI
             //Debug.WriteLine("Attempting to load symbols");
             try
             {
-                //Debug.WriteLine(UIMode);
-                //symbolLoader = adsClient.CreateSymbolInfoLoader();
-                //TcAdsSymbolInfo symbol = symbolLoader.GetFirstSymbol(true);
-
-
-                //TcAdsSymbolInfo symbol = loader.GetFirstSymbol(true);
-
-                //while (symbol != null)
-                //{
-                //treeViewSymbols.Nodes.Add(CreateNewNode(symbol));
-                //symbol = symbol.NextSymbol;
-                //}
-                /*
-                {
-                    InitializeComponent();
-                    treeView.Items.Add(ConvertToWpf(node));
-                }
-
-
-                TreeViewItem ConvertToWpf(TreeNode node)
-                {
-                    var wpfItem = new TreeViewItem();
-                    wpfItem.Header = node.Text;
-                    foreach (var child in node.Nodes)
-                    {
-                        wpfItem.Items.Add(ConvertToWpf(child));
-                    }
-                    return wpfItem;
-                }
-                */
-
-
-
-
                 ISymbolLoader loader = SymbolLoaderFactory.Create(adsClient, SymbolLoaderSettings.Default);
                 foreach (Symbol symbol in loader.Symbols)
                 {
                     //treeViewSymbols.Items.Add(symbol.InstancePath.ToString());
                     treeViewSymbols.Items.Add(SymbolsToTreeView(symbol));
 
-                    //foreach (Symbol subSymbol in symbol.SubSymbols)
-                    //{
-                      //  Debug.WriteLine(subSymbol.InstancePath.ToString());
-                    //}
                     }
                 
             }
@@ -193,21 +152,6 @@ namespace TwinCAT_GUI
             }
 
         }
-        /*
-        private TreeNode CreateNewNode(TcAdsSymbolInfo symbol)
-        {
-            //Debug.WriteLine("Creating" + symbol);
-            TreeNode node = new TreeNode(symbol.Name);
-            node.Tag = symbol;
-            TcAdsSymbolInfoCollection subSymbols = symbol.SubSymbols;
-            foreach (TcAdsSymbolInfo sub in subSymbols)
-            {
-                //    Debug.WriteLine(sub);
-                node.Nodes.Add(CreateNewNode(sub));
-            }
-            return node;
-        }
-        */
 
         private void BtnLoad_Click(object sender, RoutedEventArgs e)
         {
@@ -219,15 +163,17 @@ namespace TwinCAT_GUI
             TreeItem.Header = symbol.InstancePath;
             foreach (Symbol subSymbol in symbol.SubSymbols)
             {
-                TreeItem.Items.Add(subSymbol.InstancePath.ToString());
-                //Debug.WriteLine(subSymbol.SubSymbolCount.ToString() + " " + subSymbol.InstancePath.ToString());
+                
+                //multilevel nesting of items
                 if (subSymbol.SubSymbolCount > 0)
                 {
-                    treeViewSymbols.Items.Add(SymbolsToTreeView(subSymbol));
+                    TreeItem.Items.Add(SymbolsToTreeView(subSymbol));
+
+                }
+                else {
+                    TreeItem.Items.Add(subSymbol.InstancePath.ToString());
                 }
             }
-               
-            //TreeItem.ItemsSource. = new string[] { "Monitor", "CPU", "Mouse" };
 
             return TreeItem;
         }
