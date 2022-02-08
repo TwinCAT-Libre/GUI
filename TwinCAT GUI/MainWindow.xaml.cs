@@ -83,7 +83,7 @@ namespace TwinCAT_GUI
                 
 
 
-                ISymbolLoader loader = SymbolLoaderFactory.Create(adsSysSrv, SymbolLoaderSettings.Default);
+                ISymbolLoader loader = SymbolLoaderFactory.Create(adsClient, SymbolLoaderSettings.Default);
 
                 //IAmsRouter routerRoutes = RouteCollection
                 //adsRouter.
@@ -126,6 +126,66 @@ namespace TwinCAT_GUI
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
+        }
+
+
+        private void LoadSymbols()
+        {
+            treeViewSymbols.Items.Clear();
+            //Debug.WriteLine("Attempting to load symbols");
+            try
+            {
+                //Debug.WriteLine(UIMode);
+                //symbolLoader = adsClient.CreateSymbolInfoLoader();
+                //TcAdsSymbolInfo symbol = symbolLoader.GetFirstSymbol(true);
+
+
+                //TcAdsSymbolInfo symbol = loader.GetFirstSymbol(true);
+
+                //while (symbol != null)
+                //{
+                //treeViewSymbols.Nodes.Add(CreateNewNode(symbol));
+                //symbol = symbol.NextSymbol;
+                //}
+
+
+                ISymbolLoader loader = SymbolLoaderFactory.Create(adsClient, SymbolLoaderSettings.Default);
+                foreach (Symbol symbol in loader.Symbols)
+                {
+                    treeViewSymbols.Items.Add(symbol.InstancePath.ToString());
+                }
+
+            }
+            catch (TwinCAT.Ads.AdsErrorException err)
+            {
+                MessageBox.Show(err.Message + " Start service and try again");
+            }
+
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+            }
+
+        }
+        /*
+        private TreeNode CreateNewNode(TcAdsSymbolInfo symbol)
+        {
+            //Debug.WriteLine("Creating" + symbol);
+            TreeNode node = new TreeNode(symbol.Name);
+            node.Tag = symbol;
+            TcAdsSymbolInfoCollection subSymbols = symbol.SubSymbols;
+            foreach (TcAdsSymbolInfo sub in subSymbols)
+            {
+                //    Debug.WriteLine(sub);
+                node.Nodes.Add(CreateNewNode(sub));
+            }
+            return node;
+        }
+        */
+
+        private void BtnLoad_Click(object sender, RoutedEventArgs e)
+        {
+            LoadSymbols();
         }
     }
 
