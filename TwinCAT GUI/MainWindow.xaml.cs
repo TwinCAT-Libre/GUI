@@ -147,14 +147,40 @@ namespace TwinCAT_GUI
                 //treeViewSymbols.Nodes.Add(CreateNewNode(symbol));
                 //symbol = symbol.NextSymbol;
                 //}
+                /*
+                {
+                    InitializeComponent();
+                    treeView.Items.Add(ConvertToWpf(node));
+                }
+
+
+                TreeViewItem ConvertToWpf(TreeNode node)
+                {
+                    var wpfItem = new TreeViewItem();
+                    wpfItem.Header = node.Text;
+                    foreach (var child in node.Nodes)
+                    {
+                        wpfItem.Items.Add(ConvertToWpf(child));
+                    }
+                    return wpfItem;
+                }
+                */
+
+
 
 
                 ISymbolLoader loader = SymbolLoaderFactory.Create(adsClient, SymbolLoaderSettings.Default);
                 foreach (Symbol symbol in loader.Symbols)
                 {
-                    treeViewSymbols.Items.Add(symbol.InstancePath.ToString());
-                }
+                    //treeViewSymbols.Items.Add(symbol.InstancePath.ToString());
+                    treeViewSymbols.Items.Add(SymbolsToTreeView(symbol));
 
+                    //foreach (Symbol subSymbol in symbol.SubSymbols)
+                    //{
+                      //  Debug.WriteLine(subSymbol.InstancePath.ToString());
+                    //}
+                    }
+                
             }
             catch (TwinCAT.Ads.AdsErrorException err)
             {
@@ -187,6 +213,25 @@ namespace TwinCAT_GUI
         {
             LoadSymbols();
         }
+
+        private TreeViewItem SymbolsToTreeView(Symbol symbol) {
+            TreeViewItem TreeItem = new TreeViewItem();
+            TreeItem.Header = symbol.InstancePath;
+            foreach (Symbol subSymbol in symbol.SubSymbols)
+            {
+                TreeItem.Items.Add(subSymbol.InstancePath.ToString());
+                //Debug.WriteLine(subSymbol.SubSymbolCount.ToString() + " " + subSymbol.InstancePath.ToString());
+                if (subSymbol.SubSymbolCount > 0)
+                {
+                    treeViewSymbols.Items.Add(SymbolsToTreeView(subSymbol));
+                }
+            }
+               
+            //TreeItem.ItemsSource. = new string[] { "Monitor", "CPU", "Mouse" };
+
+            return TreeItem;
+        }
+
     }
 
 }
