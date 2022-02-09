@@ -271,6 +271,11 @@ namespace TwinCAT_GUI
         {
             return src.GetType().GetProperty(propName).GetValue(src, null);
         }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 
 }

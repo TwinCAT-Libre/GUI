@@ -59,7 +59,23 @@
                     <Grid Background="#FFE5E5E5"/>
                 </TabItem>
                 <TabItem Header="Settings">
-                    <Grid Background="#FFE5E5E5"/>
+                    <Grid Background="#FFE5E5E5">
+                        <GroupBox Header="Symbol Settings" Margin="10,32,541,0">
+                            <StackPanel>
+                                <StackPanel Height="100">
+                                    <CheckBox Content="Load TwinCAT " Checked="CheckBox_Checked"/>
+                                    <CheckBox Content="CheckBox"/>
+                                    <CheckBox Content="CheckBox"/>
+                                    <CheckBox Content="CheckBox"/>
+                                </StackPanel>
+                            </StackPanel>
+
+
+
+
+
+                        </GroupBox>
+                    </Grid>
                 </TabItem>
             </TabControl>
         </DockPanel>
