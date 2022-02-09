@@ -49,6 +49,7 @@
                         <ComboBox x:Name="ComboboxPorts" HorizontalAlignment="Left" Margin="115,141,0,0" VerticalAlignment="Top" Width="273" Grid.Column="1" SelectionChanged="ComboBox_SelectionChanged"/>
                         <TreeView x:Name="treeViewSymbols" Grid.Column="1" Margin="426,20,0,0"/>
                         <Button x:Name="BtnLoad" Content="Button" Grid.Column="1" HorizontalAlignment="Left" Margin="59,209,0,0" VerticalAlignment="Top" Click="BtnLoad_Click"/>
+                        <Button Content="LogDebug" Grid.Column="1" HorizontalAlignment="Left" Margin="59,282,0,0" VerticalAlignment="Top" Click="Button_Click_1"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Symbols">

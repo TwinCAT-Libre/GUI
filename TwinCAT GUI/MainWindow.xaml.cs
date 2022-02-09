@@ -13,7 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
-using System.Linq;
+using System.Linq; //
+using System.Reflection; //
 using TwinCAT;
 using TwinCAT.Ads;
 using TwinCAT.TypeSystem;
@@ -135,12 +136,27 @@ namespace TwinCAT_GUI
                 ISymbolLoader loader = SymbolLoaderFactory.Create(adsClient, SymbolLoaderSettings.Default);
                 foreach (Symbol symbol in loader.Symbols)
                 {
+                    Debug.WriteLine("//////////////////////////////////////////////////////" + symbol);
                     //treeViewSymbols.Items.Add(symbol.InstancePath.ToString());
                     treeViewSymbols.Items.Add(SymbolsToTreeView(symbol));
 
+
+                    PropertyInfo[] properties = symbol.GetType().GetProperties();
+                    foreach (PropertyInfo property in properties)
+                    {
+                        //property.SetValue(record, value);
+                        //Debug.WriteLine("//////////////////////////////////////////////////////");
+                        //Debug.WriteLine(property + " prop"); //gives data type and property name
+                        //Debug.WriteLine(property.Name + " name"); //just give property name
+
+                        ///the god line, returns value of property, variably
+                        Debug.WriteLine(symbol.InstancePath + " " + property.Name + " " + GetPropValue(symbol, property.Name)); //just give property name
                     }
-                
-            }
+
+
+                    }
+
+                }
             catch (TwinCAT.Ads.AdsErrorException err)
             {
                 MessageBox.Show(err.Message + " Start service and try again");
@@ -161,23 +177,100 @@ namespace TwinCAT_GUI
         private TreeViewItem SymbolsToTreeView(Symbol symbol) {
             TreeViewItem TreeItem = new TreeViewItem();
             TreeItem.Header = symbol.InstancePath;
+            
             foreach (Symbol subSymbol in symbol.SubSymbols)
             {
                 
                 //multilevel nesting of items
                 if (subSymbol.SubSymbolCount > 0)
                 {
+                    //if it has children, recursive callw
                     TreeItem.Items.Add(SymbolsToTreeView(subSymbol));
+                    //PropertyInfo[] myPropertyInfo;
+                    //Debug.WriteLine(" !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Properties");
+                    //Debug.WriteLine(subSymbol.GetType().GetProperties());
+                    /*
+                    myPropertyInfo = subSymbol.GetType().GetProperties();
+                    Console.WriteLine("Properties of System.Type are:");
+
+                    
+                    for (int i = 0; i < myPropertyInfo.Length; i++)
+                    {
+                        Debug.WriteLine(myPropertyInfo[i].ToString() + " " + subSymbol.myPropertyInfo[i].ToString());
+                    }
+
+                    */
+
+                    //////////////////////
+                    PropertyInfo[] properties = subSymbol.GetType().GetProperties();
+                    foreach (PropertyInfo property in properties)
+                    {
+                        //property.SetValue(record, value);
+                        //Debug.WriteLine(property + " prop"); //gives data type and property name
+                        //Debug.WriteLine(property.Name + " name"); //just give property name
+
+                        ///the god line, returns value of property, variably
+                        //////////////////Debug.WriteLine(subSymbol.InstancePath + " " + property.Name + " " + GetPropValue(subSymbol,property.Name)); //just give property name
+
+
+
+                        //Debug.WriteLine(subSymbol + " hasvalue");
+                        //Debug.WriteLine(subSymbol.GetType().GetProperty(property.Name) + "property name");
+                        //Debug.WriteLine(subSymbol.GetType().GetProperty(property.PropertyType.ToString()));
+                    /////////////////////////////
+
+
+                    }
 
                 }
                 else {
-                    TreeItem.Items.Add(subSymbol.InstancePath.ToString());
+                    TreeItem.Items.Add(subSymbol.InstanceName);
+                    /*
+                    Debug.WriteLine(subSymbol.Connection + " Connection");
+                    Debug.WriteLine(subSymbol.Flags + " Flags");
+
+                    Debug.WriteLine(subSymbol.HasValue + " hasvalue");
+
+                    Debug.WriteLine(subSymbol.ImageBaseAddress + " Imagabaseaddress");
+                    Debug.WriteLine(subSymbol.InstancePath + " InstancePath");
+                    
+                    Debug.WriteLine(subSymbol.IsBitType + " IsBitType");
+                    Debug.WriteLine(subSymbol.IsBound + " IsBound");
+                    
+                    Debug.WriteLine(subSymbol.IsDereferencedReference + " IsDereferencedReference");
+                    Debug.WriteLine(subSymbol.IsPrimitiveType + " IsPrimitiveType");
+                    Debug.WriteLine(subSymbol.IsReadOnly + " IsReadOnly");
+                    Debug.WriteLine(subSymbol.IsStatic + " isstatic");
+
+
+
+                    Debug.WriteLine(subSymbol.Namespace + " Namespace");
+                    Debug.WriteLine(subSymbol.NotificationSettings + " NotificationSettings");
+                    Debug.WriteLine(subSymbol.Parent + " Parent");
+                    Debug.WriteLine(subSymbol.TypeName + " TypeName");
+
+                    Debug.WriteLine(subSymbol.AccessRights + " AccessRights");
+                    */
+
+
                 }
             }
 
             return TreeItem;
         }
 
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine(treeViewSymbols.SelectedItem.ToString());
+            Debug.WriteLine(treeViewSymbols.SelectedItem.GetType());
+            
+        }
+
+
+        public static object GetPropValue(object src, string propName)
+        {
+            return src.GetType().GetProperty(propName).GetValue(src, null);
+        }
     }
 
 }
