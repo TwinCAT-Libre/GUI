@@ -24,6 +24,14 @@ using TwinCAT.Ads.TcpRouter;
 namespace TwinCAT_GUI
 {
 
+
+    public class symbolListWatchItem
+    {
+        public string symbolPath { get; set; }
+        public string symbolDataType { get; set; }
+
+        public string symbolValue { get; set; }
+    }
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -270,6 +278,18 @@ namespace TwinCAT_GUI
         public static object GetPropValue(object src, string propName)
         {
             return src.GetType().GetProperty(propName).GetValue(src, null);
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            //ListViewItem lvi = new();
+
+
+            ListViewSymbolsWatchlist.Items.Add(new symbolListWatchItem  {
+                symbolPath = "pathsymbol",
+                symbolDataType = "int",
+                symbolValue = "6"
+            });
         }
     }
 
