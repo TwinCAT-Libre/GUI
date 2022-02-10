@@ -93,7 +93,7 @@ namespace TwinCAT_GUI
 
 
                 ISymbolLoader loader = SymbolLoaderFactory.Create(adsClient, SymbolLoaderSettings.Default);
-
+                /*
                 foreach (Symbol symbol in loader.Symbols)
                 {
                     //lists all GVLs and POUs
@@ -119,7 +119,7 @@ namespace TwinCAT_GUI
 
 
                 Console.WriteLine("Writing simbols");
-
+                */
             }
 
             catch (Exception err)
@@ -148,7 +148,7 @@ namespace TwinCAT_GUI
                     //treeViewSymbols.Items.Add(symbol.InstancePath.ToString());
                     treeViewSymbols.Items.Add(SymbolsToTreeView(symbol));
 
-
+                    /*
                     PropertyInfo[] properties = symbol.GetType().GetProperties();
                     foreach (PropertyInfo property in properties)
                     {
@@ -161,7 +161,7 @@ namespace TwinCAT_GUI
                         Debug.WriteLine(symbol.InstancePath + " " + property.Name + " " + GetPropValue(symbol, property.Name)); //just give property name
                     }
 
-
+                    */
                     }
 
                 }
@@ -185,10 +185,11 @@ namespace TwinCAT_GUI
         private TreeViewItem SymbolsToTreeView(Symbol symbol) {
             TreeViewItem TreeItem = new TreeViewItem();
             TreeItem.Header = symbol.InstancePath;
+            TreeItem.Tag = symbol;
+            Debug.WriteLine(TreeItem.Tag);
             
             foreach (Symbol subSymbol in symbol.SubSymbols)
             {
-                
                 //multilevel nesting of items
                 if (subSymbol.SubSymbolCount > 0)
                 {
@@ -209,6 +210,7 @@ namespace TwinCAT_GUI
 
                     */
 
+                    /*
                     //////////////////////
                     PropertyInfo[] properties = subSymbol.GetType().GetProperties();
                     foreach (PropertyInfo property in properties)
@@ -218,7 +220,7 @@ namespace TwinCAT_GUI
                         //Debug.WriteLine(property.Name + " name"); //just give property name
 
                         ///the god line, returns value of property, variably
-                        //////////////////Debug.WriteLine(subSymbol.InstancePath + " " + property.Name + " " + GetPropValue(subSymbol,property.Name)); //just give property name
+                        Debug.WriteLine(subSymbol.InstancePath + " " + property.Name + " " + GetPropValue(subSymbol,property.Name)); //just give property name
 
 
 
@@ -226,13 +228,14 @@ namespace TwinCAT_GUI
                         //Debug.WriteLine(subSymbol.GetType().GetProperty(property.Name) + "property name");
                         //Debug.WriteLine(subSymbol.GetType().GetProperty(property.PropertyType.ToString()));
                     /////////////////////////////
-
+                    
 
                     }
-
+                    */
                 }
                 else {
-                    TreeItem.Items.Add(subSymbol.InstanceName);
+                   TreeItem.Items.Add(subSymbol.InstancePath);
+                    //TreeItem.Items.Add(subSymbol);
                     /*
                     Debug.WriteLine(subSymbol.Connection + " Connection");
                     Debug.WriteLine(subSymbol.Flags + " Flags");
@@ -291,6 +294,35 @@ namespace TwinCAT_GUI
                 symbolValue = "6"
             });
         }
+
+        private void treeViewSymbols_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            Debug.WriteLine("I changed to " + treeViewSymbols.SelectedItem.ToString());
+            Debug.WriteLine(treeViewSymbols.SelectedItem.GetType());
+            //treeUpdateUI(treeViewSymbols.SelectedItem.ToString());
+            if (treeViewSymbols.SelectedItem.GetType() == typeof(String)){
+                btnAddToWatchlist.IsEnabled = true;
+            } else {
+                btnAddToWatchlist.IsEnabled = false;
+            }
+        }
+
+        private void treeUpdateUI(string symbolstr) {
+            // Use typed object to use InfoTips
+            // DynamicSymbol dsymbol = symbolname;
+            ISymbolLoader loader = SymbolLoaderFactory.Create(adsClient, SymbolLoaderSettings.Default);
+            Symbol symbol = (Symbol)loader.Symbols[symbolstr];
+            Debug.WriteLine(symbol.ReadValue());
+            if (symbol.IsPrimitiveType)
+            {
+                btnAddToWatchlist.IsEnabled = true;
+            }
+            else {
+                btnAddToWatchlist.IsEnabled = false;
+            }
+
+        }
     }
+
 
 }
