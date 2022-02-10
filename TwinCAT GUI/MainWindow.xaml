@@ -7,7 +7,13 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <DockPanel  LastChildFill="true" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="276*"/>
+            <ColumnDefinition Width="51*"/>
+            <ColumnDefinition Width="118*"/>
+            <ColumnDefinition Width="355*"/>
+        </Grid.ColumnDefinitions>
+        <DockPanel  LastChildFill="true" Grid.ColumnSpan="4" >
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_Menu">
                     <Separator />
@@ -41,34 +47,54 @@
                 <TabItem Header="Connection">
                     <Grid Background="#FFE5E5E5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="55*"/>
-                            <ColumnDefinition Width="342*"/>
+                            <ColumnDefinition Width="70*"/>
+                            <ColumnDefinition Width="39*"/>
+                            <ColumnDefinition Width="288*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox HorizontalAlignment="Left" Margin="31,45,0,0" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="2"/>
-                        <Button Content="Connect" HorizontalAlignment="Left" Margin="166,90,0,0" VerticalAlignment="Top" Width="102" Click="Button_Click" Grid.Column="1"/>
-                        <ComboBox x:Name="ComboboxPorts" HorizontalAlignment="Left" Margin="19,79,0,0" VerticalAlignment="Top" Width="202" SelectionChanged="ComboBox_SelectionChanged" Grid.ColumnSpan="2"/>
-                        <TreeView x:Name="treeViewSymbols" Grid.Column="1" Margin="426,20,0,0"/>
-                        <Button x:Name="BtnLoad" Content="Load Symbols" Grid.Column="1" HorizontalAlignment="Left" Margin="166,131,0,0" VerticalAlignment="Top" Click="BtnLoad_Click" RenderTransformOrigin="0.404,0.507" Width="102"/>
-                        <Button Content="LogDebug" Grid.Column="1" HorizontalAlignment="Left" Margin="166,163,0,0" VerticalAlignment="Top" Click="Button_Click_1" Width="102"/>
-                        <ListView x:Name="ListViewSymbolsWatchlist" Margin="-1,234,325,0" Grid.ColumnSpan="2">
-                            <ListView.View>
+                        <TextBox HorizontalAlignment="Left" Margin="31,45,0,0" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="2" Height="18"/>
+                        <Button Content="Connect" HorizontalAlignment="Left" Margin="342,10,0,0" VerticalAlignment="Top" Width="102" Click="Button_Click" Grid.Column="2" Height="20"/>
+                        <ComboBox x:Name="ComboboxPorts" HorizontalAlignment="Left" Margin="19,79,0,0" VerticalAlignment="Top" Width="202" SelectionChanged="ComboBox_SelectionChanged" Grid.ColumnSpan="3" Height="22"/>
+                        <Button x:Name="BtnLoad" Content="Load Symbols" Grid.Column="2" HorizontalAlignment="Left" Margin="342,54,0,0" VerticalAlignment="Top" Click="BtnLoad_Click" RenderTransformOrigin="0.404,0.507" Width="102" Height="20"/>
+                        <Button Content="LogDebug" Grid.Column="2" HorizontalAlignment="Left" Margin="342,86,0,0" VerticalAlignment="Top" Click="Button_Click_1" Width="102" Height="20"/>
+                        <Button Content="Add to Watchlist" Grid.Column="2" HorizontalAlignment="Left" Margin="342,111,0,0" VerticalAlignment="Top" Width="102" Click="Button_Click_2" Height="20"/>
+                        <GroupBox Header="Watchlist" Margin="108,193,0,0" Grid.Column="2">
+                            <Grid>
+                                <StackPanel Margin="0,0,0,124" Orientation="Horizontal">
+                                    <Button Content="Button"/>
+                                    <Button Content="Button"/>
+                                    <Button Content="Button"/>
+                                </StackPanel>
+                                <ListView x:Name="ListViewSymbolsWatchlist" Margin="0,31,0,0">
+                                    <ListView.View>
 
-                                <GridView AllowsColumnReorder="true" ColumnHeaderToolTip="Symbol Watchlist">
+                                        <GridView AllowsColumnReorder="true" ColumnHeaderToolTip="Symbol Watchlist">
 
-                                    <GridViewColumn DisplayMemberBinding="{Binding Path=symbolPath}" Header="Symbol" Width="250"/>
+                                            <GridViewColumn DisplayMemberBinding="{Binding symbolPath}" Header="Symbol" Width="250"/>
 
-                                    <GridViewColumn DisplayMemberBinding="{Binding Path=symbolDataType}" Width="100">
-                                        <GridViewColumnHeader>Data Type
+                                            <GridViewColumn DisplayMemberBinding="{Binding symbolDataType}" Width="100">
+                                                <GridViewColumnHeader Content="Data Type"/>
+                                            </GridViewColumn>
 
-                                        </GridViewColumnHeader>
-                                    </GridViewColumn>
+                                            <GridViewColumn DisplayMemberBinding="{Binding symbolValue}" Header="Value" Width="100"/>
+                                        </GridView>
 
-                                    <GridViewColumn DisplayMemberBinding="{Binding Path=symbolValue}" Header="Value" Width="100"/>
-                                </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
 
-                            </ListView.View>
-                        </ListView>
-                        <Button Content="Add to Watchlist" Grid.Column="1" HorizontalAlignment="Left" Margin="166,193,0,0" VerticalAlignment="Top" Width="102" Click="Button_Click_2"/>
+
+                        </GroupBox>
+                        <GroupBox Header="Symbols" Margin="0,0,468,0" Grid.ColumnSpan="3">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="25*"/>
+                                    <ColumnDefinition Width="347*"/>
+                                </Grid.ColumnDefinitions>
+                                <TreeView x:Name="treeViewSymbols" Grid.ColumnSpan="2" Margin="0,28,0,0"/>
+                                <Button Content="Button" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="26" Width="66"/>
+                                <Button Content="Button" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="66" Grid.Column="1" Margin="50,0,0,0"/>
+                            </Grid>
+                        </GroupBox>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Symbols">
@@ -82,7 +108,7 @@
                         <GroupBox Header="Symbol Settings" Margin="10,32,541,0">
                             <StackPanel>
                                 <StackPanel Height="100">
-                                    <CheckBox Content="Load TwinCAT " Checked="CheckBox_Checked"/>
+                                    <CheckBox Content="Load TwinCAT System Symbol Lists" Checked="CheckBox_Checked"/>
                                     <CheckBox Content="CheckBox"/>
                                     <CheckBox Content="CheckBox"/>
                                     <CheckBox Content="CheckBox"/>
