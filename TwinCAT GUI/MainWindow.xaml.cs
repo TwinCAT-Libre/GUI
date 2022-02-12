@@ -15,11 +15,13 @@ using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Linq; //
 using System.Reflection; //
+using System.Threading; //
 using TwinCAT;
 using TwinCAT.Ads;
 using TwinCAT.TypeSystem;
 using TwinCAT.Ads.TypeSystem;
 using TwinCAT.Ads.TcpRouter;
+using System.Buffers.Binary;
 
 namespace TwinCAT_GUI
 {
@@ -32,6 +34,20 @@ namespace TwinCAT_GUI
 
         public string symbolValue { get; set; }
     }
+    /*
+    public class handleWatchItem
+    {
+        public string symbolPath { get; set; }
+
+        public uint handle { get; set; }
+    }*/
+
+    struct handleWatchItem
+    {
+        public string symbolPath;
+        public uint handleID;
+    };
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -295,33 +311,224 @@ namespace TwinCAT_GUI
             });
         }
 
+        private void isSymbolPrimitive() { 
+        
+        }
+        private void treeUpdateUI(string symbolstr) {
+            // Use typed object to use InfoTips
+            ISymbolLoader loader = SymbolLoaderFactory.Create(adsClient, SymbolLoaderSettings.Default);
+           try
+            {
+                Symbol symbol = (Symbol)loader.Symbols[symbolstr];
+                // Debug.WriteLine(symbol.ReadValue());
+                if (symbol.IsPrimitiveType)
+                {
+                    btnAddToWatchlist.IsEnabled = true;
+                }
+                else
+                {
+                    btnAddToWatchlist.IsEnabled = false;
+                }
+            }
+            catch (Exception err)
+            {
+                //MessageBox.Show(err.Message);
+                Debug.WriteLine(err.Message);
+                btnAddToWatchlist.IsEnabled = false;
+            }
+
+
+
+        }
+
+        private void btnAddToWatchlist_Click(object sender, RoutedEventArgs e)
+        {
+            ISymbolLoader loader = SymbolLoaderFactory.Create(adsClient, SymbolLoaderSettings.Default);
+
+            Symbol symbol = (Symbol)loader.Symbols[treeViewSymbols.SelectedItem.ToString()];
+
+            ListViewSymbolsWatchlist.Items.Add(new symbolListWatchItem
+            {
+                symbolPath = symbol.InstancePath,
+                symbolDataType = symbol.DataType.ToString(),
+                symbolValue = symbol.ReadValue().ToString()
+            });
+
+
+            //add variable device notification
+            /*
+            uint[] hConnect = new uint[7];
+
+            try
+            {
+                hConnect[0] = adsClient.AddDeviceNotification("MAIN.HeartBeat", 1, new NotificationSettings(AdsTransMode.OnChange, 100, 0), tbBool);
+
+            } 
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+            }
+            */
+
+        }
+
         private void treeViewSymbols_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            Debug.WriteLine("I changed to " + treeViewSymbols.SelectedItem.ToString());
-            Debug.WriteLine(treeViewSymbols.SelectedItem.GetType());
-            //treeUpdateUI(treeViewSymbols.SelectedItem.ToString());
+            //if the item is a primitive, allow the 'add to watchlist' button to be enabled
+            /*
             if (treeViewSymbols.SelectedItem.GetType() == typeof(String)){
                 btnAddToWatchlist.IsEnabled = true;
             } else {
                 btnAddToWatchlist.IsEnabled = false;
             }
+            */
+            //Debug.WriteLine(treeViewSymbols.SelectedItem.ToString());
+            treeUpdateUI(treeViewSymbols.SelectedItem.ToString());
         }
 
-        private void treeUpdateUI(string symbolstr) {
-            // Use typed object to use InfoTips
-            // DynamicSymbol dsymbol = symbolname;
-            ISymbolLoader loader = SymbolLoaderFactory.Create(adsClient, SymbolLoaderSettings.Default);
-            Symbol symbol = (Symbol)loader.Symbols[symbolstr];
-            Debug.WriteLine(symbol.ReadValue());
-            if (symbol.IsPrimitiveType)
+        private void btnClearWatchlist_Click(object sender, RoutedEventArgs e)
+        {
+            ListViewSymbolsWatchlist.Items.Clear();
+        }
+
+        private void btnRemoveWatchlistItem_Click(object sender, RoutedEventArgs e)
+        {
+            //Debug.WriteLine(ListViewSymbolsWatchlist.SelectedItem);
+            ListViewSymbolsWatchlist.Items.Remove(ListViewSymbolsWatchlist.SelectedItem);
+        }
+
+        private void btnSubscribe_Click(object sender, RoutedEventArgs e)
+        {
+            //int size = sizeof(bool);
+            //object mydata = new object();
+            //uint myHandle = new uint();
+            //Notification
+            // adsClient.TryAddDeviceNotification("Main.HeartBeat",size,default,myHandle,);
+            //adsClient.try
+            //ResultHandle result =  adsClient.AddDeviceNotification("MAIN.HeartBeat", size, new NotificationSettings(AdsTransMode.OnChange, 200, 0), null, cancel);
+            RegisterNotifications3("Main.HeartBeat");
+        }
+
+
+        private void RegisterNotifications()
+        {
+            using (AdsClient client = new AdsClient())
             {
-                btnAddToWatchlist.IsEnabled = true;
-            }
-            else {
-                btnAddToWatchlist.IsEnabled = false;
-            }
+                // Add the Notification event handler
+                client.AdsNotification += Client_AdsNotification;
 
+                // Connect to target
+                client.Connect(AmsNetId.Local, 851);
+                uint notificationHandle = 0;
+
+                try
+                {
+                    // Notification to a DINT Type (UINT32)
+                    // Check for change every 200 ms
+
+                    int size = sizeof(UInt32);
+                    //byte[] notificationBuffer = new byte[sizeof(UInt32)];
+
+                    notificationHandle = client.AddDeviceNotification("MAIN.HeartBeat", size, new NotificationSettings(AdsTransMode.OnChange, 200, 0), null);
+                    Thread.Sleep(5000); // Sleep the main thread to get some (asynchronous Notifications)
+                    Debug.WriteLine(notificationHandle + " try");
+                }
+                finally
+                {
+                    // Unregister the Event / Handle
+                    Debug.WriteLine(notificationHandle + " finally");
+                    client.DeleteDeviceNotification(notificationHandle);
+                    client.AdsNotification -= Client_AdsNotification;
+                }
+            }
         }
+
+        private void RegisterNotifications2(string SymbolName)
+        {
+            //using (AdsClient client = new AdsClient())
+            // Add the Notification event handler
+            adsClient.AdsNotification += Client_AdsNotification;
+
+            // Connect to target
+            //adsClient.Connect(AmsNetId.Local, 851);
+            uint notificationHandle = 0;
+            // Notification to a DINT Type (UINT32)
+            // Check for change every 200 ms
+
+            int size = sizeof(UInt32);
+            //byte[] notificationBuffer = new byte[sizeof(UInt32)];
+
+            notificationHandle = adsClient.AddDeviceNotification(SymbolName, size, new NotificationSettings(AdsTransMode.OnChange, 200, 0), null);
+            //Thread.Sleep(5000); // Sleep the main thread to get some (asynchronous Notifications)
+        }
+
+        private void RegisterNotifications3(string SymbolName)
+        {
+            //using (AdsClient client = new AdsClient())
+            // Add the Notification event handler
+            adsClient.AdsNotificationEx += Client_AdsNotificationEx;
+
+            // Connect to target
+            //adsClient.Connect(AmsNetId.Local, 851);
+            uint notificationHandle = 0;
+
+            handleWatchItem handleitem;
+            // Notification to a DINT Type (UINT32)
+            // Check for change every 200 ms
+
+            //int size = sizeof(UInt32);
+            //byte[] notificationBuffer = new byte[sizeof(UInt32)];
+            handleitem.symbolPath = SymbolName;
+            //handleitem.handleID = adsClient.AddDeviceNotificationEx(SymbolName, new NotificationSettings(AdsTransMode.OnChange, 200, 0),null, typeof(bool));
+            handleitem.handleID = adsClient.AddDeviceNotificationEx(SymbolName, new NotificationSettings(AdsTransMode.OnChange, 200, 0), SymbolName, typeof(bool));
+            //Thread.Sleep(5000); // Sleep the main thread to get some (asynchronous Notifications)
+            // adsClient.AddDeviceNotificationEx()
+        }
+
+
+
+        private void Client_AdsNotification(object sender, AdsNotificationEventArgs e)
+        {
+            // Or here we know about UDINT type --> can be marshalled as UINT32
+            uint nCounter = BinaryPrimitives.ReadUInt32LittleEndian(e.Data.Span);
+            //Debug.WriteLine("notification "+ sender.ToString() + " " + e.ToString());
+           // Debug.WriteLine(nCounter); //toggle b/t 1 and 0
+            Debug.WriteLine(e.Data.Span.ToString() + " data span"); //prints out system.readinlybyte
+            Debug.WriteLine(e.Handle.ToString()+ " e handle");
+            Debug.WriteLine(sender.ToString() + " sender");
+            //Debug.WriteLine(e..TimeStamp.ToString()+ " timestamp");
+            //Debug.WriteLine(e.UserData.ToString() + " e userdata");
+            
+
+            // If Synchronization is needed (e.g. in Windows.Forms or WPF applications)
+            // we could synchronize via SynchronizationContext into the UI Thread
+
+            //SynchronizationContext syncContext = SynchronizationContext.Current;
+            // _context.Post(status => someLabel.Text = nCounter.ToString(), null); // Non-blocking post 
+        }
+        private void Client_AdsNotificationEx(object sender, AdsNotificationExEventArgs e)
+        {
+            // Or here we know about UDINT type --> can be marshalled as UINT32
+            //uint nCounter = BinaryPrimitives.ReadUInt32LittleEndian(e.Data.Span);
+            //Debug.WriteLine("notification "+ sender.ToString() + " " + e.ToString());
+            // Debug.WriteLine(nCounter); //toggle b/t 1 and 0
+            Debug.WriteLine(e.Data.Span.ToString() + " data span"); //prints out system.readinlybyte
+            Debug.WriteLine(e.Handle.ToString() + " e handle");
+            Debug.WriteLine(sender.ToString() + " sender");
+            Debug.WriteLine(e.TimeStamp.ToString() + " timestamp");
+            Debug.WriteLine(e.Value.ToString() + " Value");
+            Debug.WriteLine(e.UserData.ToString() + " userdata");
+            //Debug.WriteLine(e.UserData.ToString() + " e userdata");
+
+
+            // If Synchronization is needed (e.g. in Windows.Forms or WPF applications)
+            // we could synchronize via SynchronizationContext into the UI Thread
+
+            //SynchronizationContext syncContext = SynchronizationContext.Current;
+            // _context.Post(status => someLabel.Text = nCounter.ToString(), null); // Non-blocking post 
+        }
+
+
     }
 
 
