@@ -65,16 +65,16 @@
                         <GroupBox Header="Watchlist" Margin="108,193,0,0" Grid.Column="3">
                             <Grid>
                                 <Grid Margin="0,0,0,124">
-                                    <Button x:Name="btnClearWatchlist" Click="btnClearWatchlist_Click" Margin="1,0,413,0">
+                                    <Button x:Name="btnClearWatchlist" Click="btnClearWatchlist_Click" Height="26" Width="66" Margin="1,0,389,0">
                                         <iconPacks:MaterialDesign Kind="DeleteSweep" />
                                     </Button>
-                                    <Button x:Name="btnRemoveWatchlistItem" Click="btnRemoveWatchlistItem_Click" Margin="48,0,360,0">
+                                    <Button x:Name="btnRemoveWatchlistItem" Click="btnRemoveWatchlistItem_Click" Height="26" Width="66" Margin="70,0,320,0">
                                         <iconPacks:MaterialDesign Kind="DeleteForever" />
                                     </Button>
-                                    <Button x:Name="btnResume" Click="btnRemoveWatchlistItem_Click" Margin="406,0,1,0">
+                                    <Button x:Name="btnResume" Click="btnRemoveWatchlistItem_Click" Height="26" Width="66" Margin="390,0,0,0">
                                         <iconPacks:MaterialDesign Kind="PlayArrow" />
                                     </Button>
-                                    <Button x:Name="btnPause" Margin="350,0,57,0" Height="26.16">
+                                    <Button x:Name="btnPause" Height="26" Width="66" Margin="321,0,69,0">
                                         <iconPacks:MaterialDesign Kind="Pause" />
                                     </Button>
 
