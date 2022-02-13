@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:local="clr-namespace:TwinCAT_GUI"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
@@ -47,7 +48,7 @@
                 <TabItem Header="Connection">
                     <Grid Background="#FFE5E5E5"/>
                 </TabItem>
-                <TabItem Header="Symbols" Height="20" VerticalAlignment="Bottom">
+                <TabItem Header="Symbols" Height="20" VerticalAlignment="Top">
                     <Grid Background="#FFE5E5E5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="14*"/>
@@ -63,14 +64,26 @@
                         <Button Content="Add to Watchlist" Grid.Column="3" HorizontalAlignment="Left" Margin="342,111,0,0" VerticalAlignment="Top" Width="102" Click="Button_Click_2" Height="20"/>
                         <GroupBox Header="Watchlist" Margin="108,193,0,0" Grid.Column="3">
                             <Grid>
-                                <StackPanel Margin="0,0,0,124" Orientation="Horizontal">
-                                    <Button x:Name="btnClearWatchlist" Content="Clear All" Width="61" Click="btnClearWatchlist_Click"/>
-                                    <Button x:Name="btnRemoveWatchlistItem" Content="Remove Selected" Width="106" Click="btnRemoveWatchlistItem_Click"/>
-                                </StackPanel>
+                                <Grid Margin="0,0,0,124">
+                                    <Button x:Name="btnClearWatchlist" Click="btnClearWatchlist_Click" Margin="1,0,413,0">
+                                        <iconPacks:MaterialDesign Kind="DeleteSweep" />
+                                    </Button>
+                                    <Button x:Name="btnRemoveWatchlistItem" Click="btnRemoveWatchlistItem_Click" Margin="48,0,360,0">
+                                        <iconPacks:MaterialDesign Kind="DeleteForever" />
+                                    </Button>
+                                    <Button x:Name="btnResume" Click="btnRemoveWatchlistItem_Click" Margin="406,0,1,0">
+                                        <iconPacks:MaterialDesign Kind="PlayArrow" />
+                                    </Button>
+                                    <Button x:Name="btnPause" Margin="350,0,57,0" Height="26.16">
+                                        <iconPacks:MaterialDesign Kind="Pause" />
+                                    </Button>
+
+                                </Grid>
                                 <ListView x:Name="ListViewSymbolsWatchlist" Margin="0,31,0,0">
                                     <ListView.View>
 
                                         <GridView AllowsColumnReorder="true" ColumnHeaderToolTip="Symbol Watchlist">
+                                            <GridViewColumn DisplayMemberBinding="{Binding symbolHandle}" Header="Handle" Width="50"/>
 
                                             <GridViewColumn DisplayMemberBinding="{Binding symbolPath}" Header="Symbol" Width="250"/>
 
@@ -98,7 +111,9 @@
                                 <Button x:Name="btnAddToWatchlist" Content="Add to Watchlist" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="112" Grid.Column="1" Margin="50,0,0,0" IsEnabled="False" Click="btnAddToWatchlist_Click"/>
                             </Grid>
                         </GroupBox>
-                        <Button x:Name="btnSubscribe" Content="Button" Grid.Column="3" HorizontalAlignment="Left" Margin="194,79,0,0" VerticalAlignment="Top" Click="btnSubscribe_Click"/>
+                        <Button x:Name="btnLog" Content="LogList" Grid.Column="3" HorizontalAlignment="Left" Margin="194,121,0,0" VerticalAlignment="Top" Click="btnLog_Click"/>
+                        <Button x:Name="btnAddNotify" Content="Notify +" Grid.Column="3" HorizontalAlignment="Left" Margin="194,43,0,0" VerticalAlignment="Top" Click="btnAddNotify_Click"/>
+                        <Button x:Name="btnNotifySubtract" Content="Notify -" Grid.Column="3" HorizontalAlignment="Left" Margin="194,77,0,0" VerticalAlignment="Top" Width="48" Click="btnNotifySubtract_Click"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="TwinSAFE" IsEnabled="False">

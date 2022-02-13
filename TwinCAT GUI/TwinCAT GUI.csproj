@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="5.0.528" />
     <PackageReference Include="Beckhoff.TwinCAT.Ads.TcpRouter" Version="5.0.528" />
+    <PackageReference Include="MahApps.Metro.IconPacks" Version="4.11.0" />
   </ItemGroup>
 
 </Project>
