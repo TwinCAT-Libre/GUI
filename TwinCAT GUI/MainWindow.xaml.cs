@@ -374,12 +374,16 @@ namespace TwinCAT_GUI
         private void btnClearWatchlist_Click(object sender, RoutedEventArgs e)
         {
             ListViewSymbolsWatchlist.Items.Clear();
+            
         }
 
         private void btnRemoveWatchlistItem_Click(object sender, RoutedEventArgs e)
         {
-            //Debug.WriteLine(ListViewSymbolsWatchlist.SelectedItem);
-            ListViewSymbolsWatchlist.Items.Remove(ListViewSymbolsWatchlist.SelectedItem);
+            Debug.WriteLine("removing " + ListViewSymbolsWatchlist.SelectedItem);
+            //ListViewSymbolsWatchlist.Items.Remove(ListViewSymbolsWatchlist.SelectedItem);
+            //UnRegisterNotification(ListViewSymbolsWatchlist.SelectedItem.)
+                //todo 
+            symbolListWatchItem removeItem = (symbolListWatchItem)ListViewSymbolsWatchlist.SelectedItem;
         }
         
         private void btnSubscribe_Click(object sender, RoutedEventArgs e)
@@ -403,6 +407,12 @@ namespace TwinCAT_GUI
             //mySymbol.DataType.GetType();
             notificationHandle = adsSymbolClient.AddDeviceNotificationEx(mySymbol.InstancePath, new NotificationSettings(AdsTransMode.OnChange, 200, 0), mySymbol.InstancePath, mySymbol.ReadValue().GetType());
             return notificationHandle;
+        }
+
+        private void UnRegisterNotification(uint notificationHandle)
+        {
+            // Add the Notification event handler
+            adsSymbolClient.DeleteDeviceNotification(notificationHandle);
         }
 
         private void Client_AdsNotificationEx(object sender, AdsNotificationExEventArgs e)
@@ -443,7 +453,7 @@ namespace TwinCAT_GUI
         }
 
         private void SymbolNotification(bool Enable) {
-
+            //resumes and pauses the update of the ads notifications
             if (Enable){
                 adsSymbolClient.AdsNotificationEx += Client_AdsNotificationEx;
             } 
