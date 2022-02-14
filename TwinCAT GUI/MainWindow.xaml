@@ -46,39 +46,61 @@
             </StatusBar>
             <TabControl >
                 <TabItem Header="Connection">
-                    <Grid Background="#FFE5E5E5"/>
-                </TabItem>
-                <TabItem Header="Symbols">
                     <Grid Background="#FFE5E5E5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="14*"/>
-                            <ColumnDefinition Width="56*"/>
-                            <ColumnDefinition Width="39*"/>
-                            <ColumnDefinition Width="288*"/>
+                            <ColumnDefinition Width="145*"/>
+                            <ColumnDefinition Width="649*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox HorizontalAlignment="Left" Margin="3,45,0,0" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="2" Height="18" Grid.Column="1"/>
-                        <Button Content="Connect" HorizontalAlignment="Left" Margin="342,10,0,0" VerticalAlignment="Top" Width="102" Click="Button_Click" Grid.Column="3" Height="20"/>
-                        <ComboBox x:Name="ComboboxPorts" HorizontalAlignment="Left" Margin="19,79,0,0" VerticalAlignment="Top" Width="202" SelectionChanged="ComboBox_SelectionChanged" Grid.ColumnSpan="4" Height="22"/>
-                        <Button x:Name="BtnLoad" Content="Load Symbols" Grid.Column="3" HorizontalAlignment="Left" Margin="342,54,0,0" VerticalAlignment="Top" Click="BtnLoad_Click" RenderTransformOrigin="0.404,0.507" Width="102" Height="20"/>
-                        <Button Content="LogDebug" Grid.Column="3" HorizontalAlignment="Left" Margin="342,86,0,0" VerticalAlignment="Top" Click="Button_Click_1" Width="102" Height="20"/>
-                        <Button Content="Add to Watchlist" Grid.Column="3" HorizontalAlignment="Left" Margin="342,111,0,0" VerticalAlignment="Top" Width="102" Click="Button_Click_2" Height="20"/>
-                        <GroupBox Header="Watchlist" Margin="108,193,0,0" Grid.Column="3">
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Symbols">
+                    <Grid Background="#FFE5E5E5" ShowGridLines="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                            
+                        </Grid.RowDefinitions>
+                        
+                        
+                        
+                        <GroupBox Header="Watchlist"  Grid.ColumnSpan="6" Grid.Row="1">
                             <Grid>
-                                <Button x:Name="btnClearWatchlist" Click="btnClearWatchlist_Click" Height="26" Width="66" VerticalAlignment="Top"  HorizontalAlignment="Left" Grid.ColumnSpan="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                    
+                                </Grid.RowDefinitions>
+                                <Button x:Name="btnClearWatchlist" Click="btnClearWatchlist_Click" Grid.ColumnSpan="2" Grid.Column="5" Margin="5,5,5,5">
                                     <iconPacks:MaterialDesign Kind="DeleteSweep" />
                                 </Button>
-                                <Button x:Name="btnRemoveWatchlistItem" Click="btnRemoveWatchlistItem_Click" Height="26" Width="66" VerticalAlignment="Top" Margin="72,0,0,0" HorizontalAlignment="Left">
+                                <Button x:Name="btnRemoveWatchlistItem" Click="btnRemoveWatchlistItem_Click"  Grid.Column="5" Grid.Row="1" Margin="5,5,5,5">
                                     <iconPacks:MaterialDesign Kind="DeleteForever" />
                                 </Button>
-                                <Button x:Name="btnResume" Click="btnRemoveWatchlistItem_Click" Height="26" Width="66" VerticalAlignment="Top" Margin="146,0,0,0" HorizontalAlignment="Left">
-                                    <iconPacks:MaterialDesign Kind="PlayArrow" />
-                                </Button>
-                                <Button x:Name="btnPause" Height="26" Width="66" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="219,0,0,0">
-                                    <iconPacks:MaterialDesign Kind="Pause" />
-                                </Button>
+                                <WrapPanel Grid.Row="2" Grid.Column="5" ItemWidth="50">
+                                    <Button x:Name="btnResume" Click="btnRemoveWatchlistItem_Click" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                        <iconPacks:MaterialDesign Kind="PlayArrow" />
+                                    </Button>
+                                    <Button x:Name="btnPause" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                        <iconPacks:MaterialDesign Kind="Pause" />
+                                    </Button>
+                                </WrapPanel>
+                               
 
 
-                                <ListView x:Name="ListViewSymbolsWatchlist" Margin="0,31,0,0" Grid.ColumnSpan="5">
+                                <ListView x:Name="ListViewSymbolsWatchlist" Grid.ColumnSpan="5" Grid.RowSpan="4">
                                     <ListView.View>
 
                                         <GridView AllowsColumnReorder="true" ColumnHeaderToolTip="Symbol Watchlist">
@@ -99,20 +121,36 @@
 
 
                         </GroupBox>
-                        <GroupBox Header="Symbols" Margin="0,0,468,0" Grid.ColumnSpan="4">
+                        <GroupBox Header="Symbols" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="25*"/>
-                                    <ColumnDefinition Width="347*"/>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                                <TreeView x:Name="treeViewSymbols" Grid.ColumnSpan="2" Margin="0,28,0,0" SelectedItemChanged="treeViewSymbols_SelectedItemChanged"/>
-                                <Button Content="Reload" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="26" Width="66"/>
-                                <Button x:Name="btnAddToWatchlist" Content="Add to Watchlist" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="112" Grid.Column="1" Margin="50,0,0,0" IsEnabled="False" Click="btnAddToWatchlist_Click"/>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                    <RowDefinition Height="*"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <TreeView x:Name="treeViewSymbols" Grid.ColumnSpan="4" Grid.RowSpan="5"  SelectedItemChanged="treeViewSymbols_SelectedItemChanged"/>
+                                <Button Content="Reload" Grid.Column="5" Grid.Row="0" Margin="5,5,5,5"/>
+                                <Button x:Name="btnAddToWatchlist" Content="Add to Watchlist"  Grid.Column="5" Grid.Row="1" Margin="5,5,5,5" IsEnabled="False" Click="btnAddToWatchlist_Click"/>
+                                <Button x:Name="btnLog" Content="LogList" Grid.Column="3" Grid.Row="5" Click="btnLog_Click"/>
+                                <Button x:Name="btnAddNotify" Content="Notify +" Grid.Column="4" Grid.Row="5"  Click="btnAddNotify_Click"/>
+                                <Button x:Name="btnNotifySubtract" Content="Notify -" Grid.Column="5" Grid.Row="5" Click="btnNotifySubtract_Click"/>
+                                <Button Content="Connect" Grid.Row="5" Grid.Column="0" Click="Button_Click" />
+                                <Button x:Name="BtnLoad" Content="Load Symbols" Grid.Column="1" Grid.Row="5" Click="BtnLoad_Click" />
+                                <Button Content="LogDebug" Grid.Column="2" Grid.Row="5" Click="Button_Click_1"/>
                             </Grid>
                         </GroupBox>
-                        <Button x:Name="btnLog" Content="LogList" Grid.Column="3" HorizontalAlignment="Left" Margin="194,121,0,0" VerticalAlignment="Top" Click="btnLog_Click"/>
-                        <Button x:Name="btnAddNotify" Content="Notify +" Grid.Column="3" HorizontalAlignment="Left" Margin="194,43,0,0" VerticalAlignment="Top" Click="btnAddNotify_Click"/>
-                        <Button x:Name="btnNotifySubtract" Content="Notify -" Grid.Column="3" HorizontalAlignment="Left" Margin="194,77,0,0" VerticalAlignment="Top" Width="48" Click="btnNotifySubtract_Click"/>
+                        
                     </Grid>
                 </TabItem>
                 <TabItem Header="TwinSAFE" IsEnabled="False">
