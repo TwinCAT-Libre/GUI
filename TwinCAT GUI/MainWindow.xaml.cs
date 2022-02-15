@@ -46,6 +46,8 @@ namespace TwinCAT_GUI
         public uint handle { get; set; }
     }*/
 
+    
+
     struct handleWatchItem
     {
         public string symbolPath;
@@ -66,6 +68,8 @@ namespace TwinCAT_GUI
         {
             InitializeComponent();
         }
+
+        //readonly Tree _familyTree;
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -315,7 +319,8 @@ namespace TwinCAT_GUI
             });
         }
 
-        private void isSymbolPrimitive() { 
+        private void findSymbolInTreeView() {
+            //treeViewSymbols.Items.fi
         
         }
         private void treeUpdateUI(string symbolstr) {

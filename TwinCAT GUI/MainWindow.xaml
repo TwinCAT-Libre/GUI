@@ -6,7 +6,7 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:local="clr-namespace:TwinCAT_GUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="MainWindow" Height="500" Width="800"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
     <Window.Resources>
         <SolidColorBrush x:Key="ToolBarButtonHover" Color="#210080FF"/>
@@ -183,7 +183,7 @@
     </Window.Resources>
     <Grid>
         <DockPanel  LastChildFill="true" Grid.ColumnSpan="4" >
-            <Menu DockPanel.Dock="Top">
+            <Menu DockPanel.Dock="Top" BorderBrush="#FFD5DFE5" BorderThickness="0,0,0,1">
                 <MenuItem Header="_Menu">
                     <Separator />
                     <MenuItem Header="_Exit" />
@@ -192,7 +192,7 @@
             <ToolBarTray DockPanel.Dock="Top" Background="#FFF0F0F0">
                 <ToolBar Background="#FFF0F0F0">
                     <TextBlock Text="Target: " VerticalAlignment="Center"></TextBlock>
-                   
+
                     <Button Command="Cut" Content="Connect" />
                     <Button Command="Copy" Content="Disconnect" />
                 </ToolBar>
@@ -230,7 +230,7 @@
                 </StatusBarItem>
                 <Separator Grid.Column="3" />
             </StatusBar>
-            <TabControl Background="#FFF0F0F0">
+            <TabControl Background="#FFF0F0F0" BorderThickness="0,1,0,0">
                 <TabControl.Resources>
                     <Style TargetType="{x:Type Grid}">
                         <Setter Property="Background" Value="#FFF0F0F0"/>
@@ -266,7 +266,7 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <GroupBox Header="Watchlist"  Grid.ColumnSpan="12" Grid.Row="6" Grid.RowSpan="5">
+                        <GroupBox Header="Watchlist"  Grid.ColumnSpan="12" Grid.Row="7" Grid.RowSpan="4">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -311,7 +311,7 @@
 
                             </Grid>
                         </GroupBox>
-                        <GroupBox Header="Symbols" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="10" Grid.RowSpan="6">
+                        <GroupBox Header="Symbols" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="9" Grid.RowSpan="7">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -331,9 +331,8 @@
                                     <RowDefinition Height="*"/>
 
                                 </Grid.RowDefinitions>
-                                <TreeView x:Name="treeViewSymbols" Grid.ColumnSpan="6" Grid.RowSpan="5"  SelectedItemChanged="treeViewSymbols_SelectedItemChanged"/>
+                                <TreeView x:Name="treeViewSymbols" Grid.ColumnSpan="6" Grid.RowSpan="4"  SelectedItemChanged="treeViewSymbols_SelectedItemChanged"/>
                                 <Button Content="Reload" Grid.Column="6" Grid.ColumnSpan="2" Grid.Row="0" Margin="5,5,5,5"/>
-                                <Button x:Name="btnAddToWatchlist" Content="Add to Watchlist"  Grid.Column="6" Grid.Row="1" Grid.ColumnSpan="2" Margin="5,5,5,5" IsEnabled="False" Click="btnAddToWatchlist_Click"/>
                                 <Button x:Name="btnLog" Content="LogList" Grid.Column="7" Grid.Row="5" Click="btnLog_Click"/>
                                 <Button x:Name="btnAddNotify" Content="Notify +" Grid.Column="6" Grid.Row="3"  Click="btnAddNotify_Click"/>
                                 <Button x:Name="btnNotifySubtract" Content="Notify -" Grid.Column="7" Grid.Row="3" Click="btnNotifySubtract_Click"/>
@@ -341,6 +340,51 @@
                                 <Button x:Name="BtnLoad" Content="Load Symbols" Grid.Column="7" Grid.Row="2" Click="BtnLoad_Click" />
                                 <Button Content="LogDebug" Grid.Column="6" Grid.Row="5" Click="Button_Click_1"/>
                             </Grid>
+                        </GroupBox>
+                        <GroupBox Grid.Column="9" Header="Symbol" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="7">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Name: " HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="4" IsEnabled="False"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="Group: " HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="4" IsEnabled="False"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text="Offset: " HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="4" IsEnabled="False"/>
+                                <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="Size: " HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="4" IsEnabled="False"/>
+                                <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Text="Datatype: " HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="4" IsEnabled="False"/>
+                                <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Text="Datatype ID: " HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="4" IsEnabled="False"/>
+                                <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Text="Persistent: " HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="4" IsEnabled="False"/>
+                                <TextBlock Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Text="Comment: " HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="4" IsEnabled="False"/>
+                                <TextBlock Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Text="Value: " HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="4" IsEnabled="False"/>
+                                <Button x:Name="btnAddToWatchlist" Content="Add to Watchlist" Grid.Row="9" Grid.ColumnSpan="3" IsEnabled="False" Click="btnAddToWatchlist_Click" Margin="1,1,1,1"/>
+                                <Button x:Name="btnWriteSymbol" Content="Write Symbol" Grid.Column="3" Grid.Row="9" Grid.ColumnSpan="3" IsEnabled="False" Margin="1,1,1,1"/>
+                            </Grid>
+
                         </GroupBox>
 
                     </Grid>
