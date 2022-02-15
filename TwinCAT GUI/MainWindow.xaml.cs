@@ -28,14 +28,15 @@ namespace TwinCAT_GUI
 {
 
 
-    public class symbolListWatchItem : INotifyPropertyChanged
+    public class symbolListWatchItem
     {
         public uint symbolHandle { get; set; }
         public string symbolPath { get; set; }
         public string symbolDataType { get; set; }
         public string symbolValue { get; set; }
+        public string symbolTimestamp { get; set; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //public event PropertyChangedEventHandler PropertyChanged;
     }
     /*
     public class handleWatchItem
