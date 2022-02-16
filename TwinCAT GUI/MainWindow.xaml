@@ -193,15 +193,15 @@
                 <ToolBar Background="#FFF0F0F0">
                     <TextBlock Text="Target: " VerticalAlignment="Center"></TextBlock>
 
-                    <Button Command="Cut" Content="Connect" />
-                    <Button Command="Copy" Content="Disconnect" />
+                    <Button x:Name="btnToolBarConnect" Content="Connect" Click="btnToolBarConnect_Click" />
+                    <Button x:Name="btnToolbarDisconnect" Content="Disconnect" Click="btnToolbarDisconnect_Click" />
                 </ToolBar>
-                <ToolBar Height="30" Background="#FFF0F0F0" IsHitTestVisible="False" OverflowMode="AsNeeded" Margin="0,0,5,0">
+                <ToolBar Height="30" Background="#FFF0F0F0" IsHitTestVisible="True" OverflowMode="AsNeeded" Margin="0,0,5,0">
                     <TextBlock></TextBlock>
-                    <Button Command="New" ToolTip="Re/Start TwinCAT System">
-                        <Image Source="Resources\TcSysUI_Start.ico" />
+                    <Button x:Name="btnToolbarTcStart" ToolTip="Re/Start TwinCAT System" IsEnabled="False">
+                        <Image  Source="Resources\TcSysUI_Start.ico" />
                     </Button>
-                    <Button Command="New" ToolTip="Set Config Mode" Foreground="#FFF0F0F0">
+                    <Button x:Name="btnToolbarTcConfig" ToolTip="Set Config Mode" Foreground="#FFF0F0F0" IsEnabled="False">
                         <Image Source="Resources\TcSysUI_Config.ico" />
                     </Button>
                 </ToolBar>
@@ -338,7 +338,7 @@
                                 <Button x:Name="btnNotifySubtract" Content="Notify -" Grid.Column="7" Grid.Row="3" Click="btnNotifySubtract_Click"/>
                                 <Button Content="Connect" Grid.Row="2" Grid.Column="6" Click="Button_Click" />
                                 <Button x:Name="BtnLoad" Content="Load Symbols" Grid.Column="7" Grid.Row="2" Click="BtnLoad_Click" />
-                                <Button Content="LogDebug" Grid.Column="6" Grid.Row="5" Click="Button_Click_1"/>
+                                <Button Content="LogDebug" Grid.Column="6" Grid.Row="5"/>
                             </Grid>
                         </GroupBox>
                         <GroupBox Grid.Column="9" Header="Symbol" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="7">
