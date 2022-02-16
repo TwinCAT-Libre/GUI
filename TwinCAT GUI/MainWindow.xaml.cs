@@ -135,10 +135,6 @@ namespace TwinCAT_GUI
 
         }
 
-        private void BtnLoad_Click(object sender, RoutedEventArgs e)
-        {
-            LoadSymbols();
-        }
 
         private TreeViewItem SymbolsToTreeView(Symbol symbol) {
             //TreeViewItem are the nested elements of a treeview
@@ -203,26 +199,7 @@ namespace TwinCAT_GUI
 
         }
 
-        private void btnAddToWatchlist_Click(object sender, RoutedEventArgs e)
-        {
-            ISymbolLoader loader = SymbolLoaderFactory.Create(adsSymbolClient, SymbolLoaderSettings.Default);
 
-            Symbol symbol = (Symbol)loader.Symbols[treeViewSymbols.SelectedItem.ToString()];
-
-            //add to notification
-            uint handleNumber = RegisterNotification(symbol);
-
-            ListViewSymbolsWatchlist.Items.Add(new symbolListWatchItem
-            {
-                symbolHandle = handleNumber,
-                symbolPath = symbol.InstancePath,
-                symbolDataType = symbol.DataType.ToString(),
-                symbolValue = symbol.ReadValue().ToString()
-            });
-
-
-
-        }
 
         private void treeViewSymbols_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
@@ -230,19 +207,6 @@ namespace TwinCAT_GUI
             treeUpdateUI(treeViewSymbols.SelectedItem.ToString());
         }
 
-        private void btnClearWatchlist_Click(object sender, RoutedEventArgs e)
-        {
-            ListViewSymbolsWatchlist.Items.Clear();
-            
-        }
-
-        private void btnRemoveWatchlistItem_Click(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("removing " + ListViewSymbolsWatchlist.SelectedItem + " from watchlist");
-            symbolListWatchItem removeItem = (symbolListWatchItem)ListViewSymbolsWatchlist.SelectedItem;
-        }
-
-        
         
         private uint RegisterNotification(Symbol mySymbol)
         {
@@ -280,10 +244,7 @@ namespace TwinCAT_GUI
             Dispatcher.Invoke(action);
         }
 
-        private void btnAddNotify_Click(object sender, RoutedEventArgs e)
-        {
-            SymbolNotification(true);
-        }
+
 
         private void SymbolNotification(bool Enable) {
             //resumes and pauses the update of the ads notifications
@@ -296,27 +257,10 @@ namespace TwinCAT_GUI
             
         }
 
-        private void btnNotifySubtract_Click(object sender, RoutedEventArgs e)
-        {
-            SymbolNotification(false);
-        }
-
-        private void btnLog_Click(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine(ListViewSymbolsWatchlist.SelectedItem);
-            Debug.WriteLine(ListViewSymbolsWatchlist.Items[0].ToString()); //first item in listview
-            //Debug.WriteLine(ListViewSymbolsWatchlist.)
-            // ListViewSymbolsWatchlist.
-            //foreach (symbolListWatchItem watchedSymbol in ListViewSymbolsWatchlist.Items) {
-              //  Debug.WriteLine(watchedSymbol.symbolHandle);
-              //  Debug.WriteLine(watchedSymbol);
-              //  watchedSymbol.symbolValue = "hi";
-            //}
-            ListViewSymbolsWatchlist.Items.Refresh();
 
 
-        }
 
+        // UI Button actions
         private void btnToolBarConnect_Click(object sender, RoutedEventArgs e)
         {
             AdsConnect();
@@ -326,7 +270,79 @@ namespace TwinCAT_GUI
         {
             AdsDisconnect();
         }
+
+        private void btnNotifySubtract_Click(object sender, RoutedEventArgs e)
+        {
+            SymbolNotification(false);
+        }
+
+        private void btnAddNotify_Click(object sender, RoutedEventArgs e)
+        {
+            SymbolNotification(true);
+        }
+
+        private void btnClearWatchlist_Click(object sender, RoutedEventArgs e)
+        {
+            ListViewSymbolsWatchlist.Items.Clear();
+
+        }
+
+        private void btnRemoveWatchlistItem_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("removing " + ListViewSymbolsWatchlist.SelectedItem + " from watchlist");
+            symbolListWatchItem removeItem = (symbolListWatchItem)ListViewSymbolsWatchlist.SelectedItem;
+        }
+
+
+        private void btnAddToWatchlist_Click(object sender, RoutedEventArgs e)
+        {
+            ISymbolLoader loader = SymbolLoaderFactory.Create(adsSymbolClient, SymbolLoaderSettings.Default);
+
+            Symbol symbol = (Symbol)loader.Symbols[treeViewSymbols.SelectedItem.ToString()];
+
+            //add to notification
+            uint handleNumber = RegisterNotification(symbol);
+
+            ListViewSymbolsWatchlist.Items.Add(new symbolListWatchItem
+            {
+                symbolHandle = handleNumber,
+                symbolPath = symbol.InstancePath,
+                symbolDataType = symbol.DataType.ToString(),
+                symbolValue = symbol.ReadValue().ToString()
+            });
+        }
+
+        private void BtnLoad_Click(object sender, RoutedEventArgs e)
+        {
+            LoadSymbols();
+        }
+
+
+
+
+        //Garbage to be deleted later
+
+        private void btnLog_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine(ListViewSymbolsWatchlist.SelectedItem);
+            Debug.WriteLine(ListViewSymbolsWatchlist.Items[0].ToString()); //first item in listview
+            //Debug.WriteLine(ListViewSymbolsWatchlist.)
+            // ListViewSymbolsWatchlist.
+            //foreach (symbolListWatchItem watchedSymbol in ListViewSymbolsWatchlist.Items) {
+            //  Debug.WriteLine(watchedSymbol.symbolHandle);
+            //  Debug.WriteLine(watchedSymbol);
+            //  watchedSymbol.symbolValue = "hi";
+            //}
+            ListViewSymbolsWatchlist.Items.Refresh();
+
+
+        }
+
+
     }
+
+
+
 
 }
 
