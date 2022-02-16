@@ -48,7 +48,8 @@ namespace TwinCAT_GUI
             InitializeComponent();
         }
 
-        private void AdsConnect() {
+        private void AdsConnect()
+        {
 
             //connect to the target system ADS server and PLC symbol runtime
             //ToDo make target remotely targetable, and PLC port selectable
@@ -161,13 +162,6 @@ namespace TwinCAT_GUI
             return TreeItem;
         }
 
-        public static object GetPropValue(object src, string propName)
-        {
-            return src.GetType().GetProperty(propName).GetValue(src, null);
-        }
-
-
-
         private void findSymbolInTreeView() {
             //ToDo - create search/filtering for the treeview
         
@@ -256,10 +250,7 @@ namespace TwinCAT_GUI
             }
             
         }
-
-
-
-
+        /////////////////////////////////////////////////////////////////////////////////////////
         // UI Button actions
         private void btnToolBarConnect_Click(object sender, RoutedEventArgs e)
         {
@@ -269,16 +260,6 @@ namespace TwinCAT_GUI
         private void btnToolbarDisconnect_Click(object sender, RoutedEventArgs e)
         {
             AdsDisconnect();
-        }
-
-        private void btnNotifySubtract_Click(object sender, RoutedEventArgs e)
-        {
-            SymbolNotification(false);
-        }
-
-        private void btnAddNotify_Click(object sender, RoutedEventArgs e)
-        {
-            SymbolNotification(true);
         }
 
         private void btnClearWatchlist_Click(object sender, RoutedEventArgs e)
@@ -312,14 +293,7 @@ namespace TwinCAT_GUI
             });
         }
 
-        private void BtnLoad_Click(object sender, RoutedEventArgs e)
-        {
-            LoadSymbols();
-        }
-
-
-
-
+        /////////////////////////////////////////////////////////////////////////////////////////
         //Garbage to be deleted later
 
         private void btnLog_Click(object sender, RoutedEventArgs e)
@@ -334,10 +308,21 @@ namespace TwinCAT_GUI
             //  watchedSymbol.symbolValue = "hi";
             //}
             ListViewSymbolsWatchlist.Items.Refresh();
-
-
         }
 
+        private void BtnLoad_Click(object sender, RoutedEventArgs e)
+        {
+            LoadSymbols();
+        }
+        private void btnNotifySubtract_Click(object sender, RoutedEventArgs e)
+        {
+            SymbolNotification(false);
+        }
+
+        private void btnAddNotify_Click(object sender, RoutedEventArgs e)
+        {
+            SymbolNotification(true);
+        }
 
     }
 
@@ -393,7 +378,10 @@ private void LoadSymbols()
 
         }
 
-
+        public static object GetPropValue(object src, string propName)
+        {
+            return src.GetType().GetProperty(propName).GetValue(src, null);
+        }
         
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
@@ -436,151 +424,151 @@ private void LoadSymbols()
 
                     */
 
-                    /*
-                    //////////////////////
-                    PropertyInfo[] properties = subSymbol.GetType().GetProperties();
-                    foreach (PropertyInfo property in properties)
-                    {
-                        //property.SetValue(record, value);
-                        //Debug.WriteLine(property + " prop"); //gives data type and property name
-                        //Debug.WriteLine(property.Name + " name"); //just give property name
-
-                        ///the god line, returns value of property, variably
-                        Debug.WriteLine(subSymbol.InstancePath + " " + property.Name + " " + GetPropValue(subSymbol,property.Name)); //just give property name
-
-
-
-                        //Debug.WriteLine(subSymbol + " hasvalue");
-                        //Debug.WriteLine(subSymbol.GetType().GetProperty(property.Name) + "property name");
-                        //Debug.WriteLine(subSymbol.GetType().GetProperty(property.PropertyType.ToString()));
-                    /////////////////////////////
-                    
-
-                    }
-                    
-                }
-                else
+/*
+//////////////////////
+PropertyInfo[] properties = subSymbol.GetType().GetProperties();
+foreach (PropertyInfo property in properties)
 {
-    TreeItem.Items.Add(subSymbol.InstancePath);
-    //TreeItem.Items.Add(subSymbol);
-    /*
-    Debug.WriteLine(subSymbol.Connection + " Connection");
-    Debug.WriteLine(subSymbol.Flags + " Flags");
+    //property.SetValue(record, value);
+    //Debug.WriteLine(property + " prop"); //gives data type and property name
+    //Debug.WriteLine(property.Name + " name"); //just give property name
 
-    Debug.WriteLine(subSymbol.HasValue + " hasvalue");
-
-    Debug.WriteLine(subSymbol.ImageBaseAddress + " Imagabaseaddress");
-    Debug.WriteLine(subSymbol.InstancePath + " InstancePath");
-
-    Debug.WriteLine(subSymbol.IsBitType + " IsBitType");
-    Debug.WriteLine(subSymbol.IsBound + " IsBound");
-
-    Debug.WriteLine(subSymbol.IsDereferencedReference + " IsDereferencedReference");
-    Debug.WriteLine(subSymbol.IsPrimitiveType + " IsPrimitiveType");
-    Debug.WriteLine(subSymbol.IsReadOnly + " IsReadOnly");
-    Debug.WriteLine(subSymbol.IsStatic + " isstatic");
+    ///the god line, returns value of property, variably
+    Debug.WriteLine(subSymbol.InstancePath + " " + property.Name + " " + GetPropValue(subSymbol,property.Name)); //just give property name
 
 
 
-    Debug.WriteLine(subSymbol.Namespace + " Namespace");
-    Debug.WriteLine(subSymbol.NotificationSettings + " NotificationSettings");
+    //Debug.WriteLine(subSymbol + " hasvalue");
+    //Debug.WriteLine(subSymbol.GetType().GetProperty(property.Name) + "property name");
+    //Debug.WriteLine(subSymbol.GetType().GetProperty(property.PropertyType.ToString()));
+/////////////////////////////
+
+
+}
+
+}
+else
+{
+TreeItem.Items.Add(subSymbol.InstancePath);
+//TreeItem.Items.Add(subSymbol);
+/*
+Debug.WriteLine(subSymbol.Connection + " Connection");
+Debug.WriteLine(subSymbol.Flags + " Flags");
+
+Debug.WriteLine(subSymbol.HasValue + " hasvalue");
+
+Debug.WriteLine(subSymbol.ImageBaseAddress + " Imagabaseaddress");
+Debug.WriteLine(subSymbol.InstancePath + " InstancePath");
+
+Debug.WriteLine(subSymbol.IsBitType + " IsBitType");
+Debug.WriteLine(subSymbol.IsBound + " IsBound");
+
+Debug.WriteLine(subSymbol.IsDereferencedReference + " IsDereferencedReference");
+Debug.WriteLine(subSymbol.IsPrimitiveType + " IsPrimitiveType");
+Debug.WriteLine(subSymbol.IsReadOnly + " IsReadOnly");
+Debug.WriteLine(subSymbol.IsStatic + " isstatic");
+
+
+
+Debug.WriteLine(subSymbol.Namespace + " Namespace");
+Debug.WriteLine(subSymbol.NotificationSettings + " NotificationSettings");
+Debug.WriteLine(subSymbol.Parent + " Parent");
+Debug.WriteLine(subSymbol.TypeName + " TypeName");
+
+Debug.WriteLine(subSymbol.AccessRights + " AccessRights");
+
+
+
+}
+}
+
+return TreeItem;
+}
+
+
+
+
+private void Button_Click(object sender, RoutedEventArgs e)
+{
+Debug.WriteLine("Test 1");
+
+//ComboboxPorts.ItemsSource = Enum.GetValues(typeof(AmsPort)).Cast<AmsPort>().ToDictionary(t => (int)t, t => t.ToString());
+//ComboboxPorts.ItemsSource = Enum.GetValues(typeof(AmsPort));
+//ComboboxPorts.ItemsSource = Enum.GetValues(typeof(AmsPort)).Cast<AmsPort>().ToLookup(t => t.ToString(), t => (int)t);
+try
+{
+//connect to system service
+adsSysSrv = new AdsClient();
+adsSysSrv.Connect((int)AmsPort.SystemService);
+Debug.WriteLine(adsSysSrv.ReadState().ToString());
+StateInfo test1 = adsSysSrv.ReadState();
+Debug.WriteLine(test1.AdsState);
+Debug.WriteLine(test1.DeviceState);
+//connect to PLC
+adsSymbolClient = new AdsClient();
+adsSymbolClient.Connect((int)AmsPort.PlcRuntime_851);
+Debug.WriteLine(adsSymbolClient.ReadState().ToString());
+StateInfo test2 = adsSymbolClient.ReadState();
+Debug.WriteLine(test2.AdsState);
+Debug.WriteLine(test2.DeviceState);
+//connect to other
+adsRouter = new AdsClient();
+adsRouter.Connect((int)AmsPort.Router);
+Debug.WriteLine(adsRouter.ReadState().ToString());
+StateInfo test3 = adsRouter.ReadState();
+Debug.WriteLine(test3.AdsState);
+Debug.WriteLine(test3.DeviceState);
+//adsSysSrv.Synchronize = true;
+Debug.WriteLine(adsSysSrv.Address);
+Debug.WriteLine(adsSysSrv.ClientAddress);
+Debug.WriteLine(adsSysSrv.IsConnected);
+Debug.WriteLine(adsSysSrv.IsLocal);
+Debug.WriteLine(adsSysSrv.Logger);
+//Debug.WriteLine(adsSysSrv.);
+Debug.WriteLine(adsRouter.Address);
+Debug.WriteLine(adsRouter.ClientAddress);
+Debug.WriteLine(adsRouter.IsConnected);
+Debug.WriteLine(adsRouter.IsLocal);
+Debug.WriteLine(adsRouter.Logger);
+
+
+
+ISymbolLoader loader = SymbolLoaderFactory.Create(adsSymbolClient, SymbolLoaderSettings.Default);
+/*
+foreach (Symbol symbol in loader.Symbols)
+{
+//lists all GVLs and POUs
+Debug.WriteLine(symbol.InstancePath);
+Debug.WriteLine(symbol.ImageBaseAddress);
+Debug.WriteLine(symbol.Namespace);
+Debug.WriteLine(symbol.Parent);
+Debug.WriteLine(symbol.SubSymbolCount);
+
+
+foreach (Symbol subSymbol in symbol.SubSymbols)
+{
+    Debug.WriteLine(subSymbol.InstancePath + " " + subSymbol.ReadValue());
     Debug.WriteLine(subSymbol.Parent + " Parent");
-    Debug.WriteLine(subSymbol.TypeName + " TypeName");
+    Debug.WriteLine(subSymbol.Namespace + " Namespace");
+    Debug.WriteLine(subSymbol.IsReadOnly + " isreadlonly");
+    Debug.WriteLine(subSymbol.IndexGroup + " indexgrp");
+    Debug.WriteLine(subSymbol.HasValue + " hasvalue");
+    Debug.WriteLine(subSymbol.Attributes + " attributes");
+    Debug.WriteLine(subSymbol.Category + " Parent");
+}
+}
 
-    Debug.WriteLine(subSymbol.AccessRights + " AccessRights");
-    
 
+Console.WriteLine("Writing simbols");
 
 }
-            }
 
-            return TreeItem;
-        }
-
-
-
-
- private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("Test 1");
-         
-            //ComboboxPorts.ItemsSource = Enum.GetValues(typeof(AmsPort)).Cast<AmsPort>().ToDictionary(t => (int)t, t => t.ToString());
-            //ComboboxPorts.ItemsSource = Enum.GetValues(typeof(AmsPort));
-            //ComboboxPorts.ItemsSource = Enum.GetValues(typeof(AmsPort)).Cast<AmsPort>().ToLookup(t => t.ToString(), t => (int)t);
-            try
-            {
-                //connect to system service
-                adsSysSrv = new AdsClient();
-                adsSysSrv.Connect((int)AmsPort.SystemService);
-                Debug.WriteLine(adsSysSrv.ReadState().ToString());
-                StateInfo test1 = adsSysSrv.ReadState();
-                Debug.WriteLine(test1.AdsState);
-                Debug.WriteLine(test1.DeviceState);
-                //connect to PLC
-                adsSymbolClient = new AdsClient();
-                adsSymbolClient.Connect((int)AmsPort.PlcRuntime_851);
-                Debug.WriteLine(adsSymbolClient.ReadState().ToString());
-                StateInfo test2 = adsSymbolClient.ReadState();
-                Debug.WriteLine(test2.AdsState);
-                Debug.WriteLine(test2.DeviceState);
-                //connect to other
-                adsRouter = new AdsClient();
-                adsRouter.Connect((int)AmsPort.Router);
-                Debug.WriteLine(adsRouter.ReadState().ToString());
-                StateInfo test3 = adsRouter.ReadState();
-                Debug.WriteLine(test3.AdsState);
-                Debug.WriteLine(test3.DeviceState);
-                //adsSysSrv.Synchronize = true;
-                Debug.WriteLine(adsSysSrv.Address);
-                Debug.WriteLine(adsSysSrv.ClientAddress);
-                Debug.WriteLine(adsSysSrv.IsConnected);
-                Debug.WriteLine(adsSysSrv.IsLocal);
-                Debug.WriteLine(adsSysSrv.Logger);
-                //Debug.WriteLine(adsSysSrv.);
-                Debug.WriteLine(adsRouter.Address);
-                Debug.WriteLine(adsRouter.ClientAddress);
-                Debug.WriteLine(adsRouter.IsConnected);
-                Debug.WriteLine(adsRouter.IsLocal);
-                Debug.WriteLine(adsRouter.Logger);
-                
-
-
-                ISymbolLoader loader = SymbolLoaderFactory.Create(adsSymbolClient, SymbolLoaderSettings.Default);
-                /*
-                foreach (Symbol symbol in loader.Symbols)
-                {
-                    //lists all GVLs and POUs
-                    Debug.WriteLine(symbol.InstancePath);
-                    Debug.WriteLine(symbol.ImageBaseAddress);
-                    Debug.WriteLine(symbol.Namespace);
-                    Debug.WriteLine(symbol.Parent);
-                    Debug.WriteLine(symbol.SubSymbolCount);
-
-
-                    foreach (Symbol subSymbol in symbol.SubSymbols)
-                    {
-                        Debug.WriteLine(subSymbol.InstancePath + " " + subSymbol.ReadValue());
-                        Debug.WriteLine(subSymbol.Parent + " Parent");
-                        Debug.WriteLine(subSymbol.Namespace + " Namespace");
-                        Debug.WriteLine(subSymbol.IsReadOnly + " isreadlonly");
-                        Debug.WriteLine(subSymbol.IndexGroup + " indexgrp");
-                        Debug.WriteLine(subSymbol.HasValue + " hasvalue");
-                        Debug.WriteLine(subSymbol.Attributes + " attributes");
-                        Debug.WriteLine(subSymbol.Category + " Parent");
-                    }
-                }
-
-
-                Console.WriteLine("Writing simbols");
-                
-            }
-
-            catch (Exception err)
+catch (Exception err)
 {
-    MessageBox.Show(err.Message);
+MessageBox.Show(err.Message);
 }
 
-        }
+}
 
 
 */
