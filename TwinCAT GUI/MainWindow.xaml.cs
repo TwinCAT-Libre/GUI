@@ -66,10 +66,10 @@ namespace TwinCAT_GUI
             {
 
 
-                _session = new AdsSession(AmsNetId.Local, 10000);
-                IConnection connection = _session.Connect();
+                //_session = new AdsSession(AmsNetId.Local, 10000);
+                //IConnection connection = _session.Connect();
                 //tbConnectionState.Text = connection.ConnectionState.ToString();
-                _session.ConnectionStateChanged += _session_ConnectionStateChanged;
+                //_session.ConnectionStateChanged += _session_ConnectionStateChanged;
 
 
                 //connect to system service (runtime)
@@ -97,14 +97,58 @@ namespace TwinCAT_GUI
                 MessageBox.Show(err.Message);
             }
 
-            Debug.WriteLine("Attempt subscription");
-            //subscribe to system service changes
-            adsSysSrv.ConnectionStateChanged += AdsSysSrv_ConnectionStateChanged;
+           
 
             Debug.WriteLine("UI Update");
             //UI update reads
             CheckServiceState();
 
+        }
+
+        private void EventSubscribe()
+        {
+            Debug.WriteLine("Attempt subscription to ads service events");
+            //subscribe to system service changes
+            //dsSysSrv.ConnectionStateChanged += AdsSysSrv_ConnectionStateChanged;
+            adsSysSrv.ConnectionStateChanged += AdsSysSrv_ConnectionStateChanged1;
+            adsSysSrv.AdsStateChanged += AdsSysSrv_AdsStateChanged;
+            adsSysSrv.AdsNotificationEx += AdsSysSrv_AdsNotificationEx;
+            adsSysSrv.RouterStateChanged += AdsSysSrv_RouterStateChanged;
+            
+        }
+
+        private void AdsSysSrv_RouterStateChanged(object sender, AmsRouterNotificationEventArgs e)
+        {
+            Debug.WriteLine("Router State Changed");
+            Debug.WriteLine(e.State);
+            Debug.WriteLine(e.State.ToString());
+            Debug.WriteLine(sender.ToString());
+
+            Action action = () => CheckServiceState();
+            Dispatcher.Invoke(action);
+            //CheckServiceState();
+
+            //throw new NotImplementedException();
+        }
+
+        private void AdsSysSrv_ConnectionStateChanged1(object sender, ConnectionStateChangedEventArgs e)
+        {
+            Debug.WriteLine("ConnectionStateChanged"); //this changes when the runtime starts/stops
+            //throw new NotImplementedException();
+        }
+
+        private void AdsSysSrv_AdsNotificationEx(object sender, AdsNotificationExEventArgs e)
+        {
+            Debug.WriteLine("AdsNotificationEx");
+            //throw new NotImplementedException(); 
+            
+        }
+
+        private void AdsSysSrv_AdsStateChanged(object sender, AdsStateChangedEventArgs e)
+        {
+            
+            Debug.WriteLine("AdsStateChanged");
+            //throw new NotImplementedException();
         }
 
         private void _session_ConnectionStateChanged(object sender, TwinCAT.ConnectionStateChangedEventArgs e)
@@ -309,7 +353,7 @@ namespace TwinCAT_GUI
         // UI Button actions
         private void btnToolBarConnect_Click(object sender, RoutedEventArgs e)
         {
-             ();
+            AdsServiceConnect();
         }
 
         private void btnToolbarDisconnect_Click(object sender, RoutedEventArgs e)
@@ -505,6 +549,11 @@ namespace TwinCAT_GUI
         private void btnConnectPLC_Click(object sender, RoutedEventArgs e)
         {
             AdsPortConnect();
+        }
+
+        private void btnSubscribe_Click(object sender, RoutedEventArgs e)
+        {
+            EventSubscribe();
         }
     }
 
