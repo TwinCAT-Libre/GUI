@@ -41,30 +41,84 @@ namespace TwinCAT_GUI
     {
         private AdsClient adsSymbolClient;
         private AdsClient adsSysSrv;
-        private AdsClient adsRouter;
+        //private AdsClient adsRouter;
+        private AdsSession _session = null;
+
+        //public AdsState AdsSystemState;
 
         public MainWindow()
         {
             InitializeComponent();
+            
         }
 
-        private void AdsConnect()
+        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e) {
+            //AdsConnect();
+        }
+
+
+        private void AdsServiceConnect()
         {
 
             //connect to the target system ADS server and PLC symbol runtime
             //ToDo make target remotely targetable, and PLC port selectable
-
             try
             {
+
+
+                _session = new AdsSession(AmsNetId.Local, 10000);
+                IConnection connection = _session.Connect();
+                //tbConnectionState.Text = connection.ConnectionState.ToString();
+                _session.ConnectionStateChanged += _session_ConnectionStateChanged;
+
+
                 //connect to system service (runtime)
                 adsSysSrv = new AdsClient();
                 adsSysSrv.Connect((int)AmsPort.SystemService);
                 StateInfo AdsSysServiceState = adsSysSrv.ReadState();
+                //adsSysSrv.ConnectionStateChanged
                 
                 Debug.WriteLine(adsSysSrv.ReadState().ToString());
                 Debug.WriteLine(AdsSysServiceState.AdsState);
                 Debug.WriteLine(AdsSysServiceState.DeviceState);
 
+                
+                /*
+                if (adsSysSrv.IsConnected)
+                {
+                    AdsPortConnect();
+                }
+                Debug.WriteLine("Attempt subscription");
+                adsSysSrv.ConnectionStateChanged += AdsSysSrv_ConnectionStateChanged;
+                */
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+            }
+
+            Debug.WriteLine("Attempt subscription");
+            //subscribe to system service changes
+            adsSysSrv.ConnectionStateChanged += AdsSysSrv_ConnectionStateChanged;
+
+            Debug.WriteLine("UI Update");
+            //UI update reads
+            CheckServiceState();
+
+        }
+
+        private void _session_ConnectionStateChanged(object sender, TwinCAT.ConnectionStateChangedEventArgs e)
+        {
+            // ConnectionStateChanged will be triggered by communication Invokes
+            //tbConnectionState.Text = e.NewState.ToString();
+            Debug.WriteLine("State Changed " + e.OldState + "-->" + e.NewState + ":" + e.Reason);
+        }
+
+
+        private void AdsPortConnect()
+        {
+            try
+            {
                 //connect to PLC instance
                 adsSymbolClient = new AdsClient();
                 adsSymbolClient.Connect((int)AmsPort.PlcRuntime_851);
@@ -73,13 +127,12 @@ namespace TwinCAT_GUI
                 Debug.WriteLine(adsSymbolClient.ReadState().ToString());
                 Debug.WriteLine(AdsSymbolClientState.AdsState);
                 Debug.WriteLine(AdsSymbolClientState.DeviceState);
+
             }
             catch (Exception err)
             {
                 MessageBox.Show(err.Message);
             }
-
-
         }
 
         private void AdsDisconnect()
@@ -93,6 +146,8 @@ namespace TwinCAT_GUI
                 adsSymbolClient.Dispose();
                 adsSysSrv.Disconnect();
                 adsSymbolClient.Disconnect();
+
+                //ToDo Update UI
 
             }
             catch (Exception err)
@@ -254,7 +309,7 @@ namespace TwinCAT_GUI
         // UI Button actions
         private void btnToolBarConnect_Click(object sender, RoutedEventArgs e)
         {
-            AdsConnect();
+             ();
         }
 
         private void btnToolbarDisconnect_Click(object sender, RoutedEventArgs e)
@@ -298,8 +353,8 @@ namespace TwinCAT_GUI
 
         private void btnLog_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine(ListViewSymbolsWatchlist.SelectedItem);
-            Debug.WriteLine(ListViewSymbolsWatchlist.Items[0].ToString()); //first item in listview
+            //Debug.WriteLine(ListViewSymbolsWatchlist.SelectedItem);
+            //Debug.WriteLine(ListViewSymbolsWatchlist.Items[0].ToString()); //first item in listview
             //Debug.WriteLine(ListViewSymbolsWatchlist.)
             // ListViewSymbolsWatchlist.
             //foreach (symbolListWatchItem watchedSymbol in ListViewSymbolsWatchlist.Items) {
@@ -307,7 +362,9 @@ namespace TwinCAT_GUI
             //  Debug.WriteLine(watchedSymbol);
             //  watchedSymbol.symbolValue = "hi";
             //}
-            ListViewSymbolsWatchlist.Items.Refresh();
+            //ListViewSymbolsWatchlist.Items.Refresh();
+            TriggerTest(true);
+            //btnToolBarConnect.Content = "True"; 
         }
 
         private void BtnLoad_Click(object sender, RoutedEventArgs e)
@@ -324,6 +381,131 @@ namespace TwinCAT_GUI
             SymbolNotification(true);
         }
 
+
+        private void btnToolbarTcStart_Click(object sender, RoutedEventArgs e)
+        {
+            SetTCState(AdsState.Reset);
+        }
+
+        private void btnToolbarTcConfig_Click(object sender, RoutedEventArgs e)
+        {
+            SetTCState(AdsState.Reconfig);
+        }
+
+        private void SetTCState(AdsState state)
+        {
+            Debug.WriteLine("Setting state " + state);
+            try
+            {
+                adsSysSrv.TryWriteControl(new StateInfo(state, adsSysSrv.ReadState().DeviceState));
+
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+            }
+        }
+
+        private void AdsSysSrv_ConnectionStateChanged(object sender, TwinCAT.ConnectionStateChangedEventArgs e)
+        {
+            Debug.WriteLine("Ads event System Service State Change");
+            CheckServiceState();
+            Debug.WriteLine(sender);
+            Debug.WriteLine(e);
+        }
+
+        
+        private bool CheckServiceState()
+        {
+            try
+            {
+                Debug.WriteLine(adsSysSrv.ReadState().AdsState + " Ads State");
+                Debug.WriteLine(adsSysSrv.ReadState().AdsState.ToString() + " Ads State ToString");
+                switch (adsSysSrv.ReadState().AdsState.ToString())
+                {
+                    case "Run":
+                        //style UI buttons
+                        btnToolbarTcConfig.Content = (Image)FindResource("TcConfig");
+                        btnToolbarTcConfig.IsEnabled = true;
+                        btnToolbarTcStart.Content = (Image)FindResource("TcStart");
+                        btnToolbarTcStart.IsEnabled = true;
+                        btnToolbarTcStart.Background = Brushes.White;
+                        btnToolbarTcStart.BorderBrush = Brushes.Black;
+                        btnToolbarTcConfig.Background = Brushes.Transparent;
+                        btnToolbarTcConfig.BorderBrush = Brushes.Transparent;
+                        Debug.WriteLine("Run state");
+
+                        return true;
+
+                    case "Config":
+                        //style UI buttons
+                        btnToolbarTcConfig.Content = (Image)FindResource("TcConfig");
+                        btnToolbarTcConfig.IsEnabled = true;
+                        btnToolbarTcStart.Content = (Image)FindResource("TcStart");
+                        btnToolbarTcStart.IsEnabled = true;
+                        btnToolbarTcStart.Background = Brushes.Transparent;
+                        btnToolbarTcStart.BorderBrush = Brushes.Transparent;
+                        btnToolbarTcConfig.Background = Brushes.White;
+                        btnToolbarTcConfig.BorderBrush = Brushes.Black;
+                        Debug.WriteLine("Config state");
+                        return true;
+
+                    default:
+                        btnToolbarTcConfig.Content = (Image)FindResource("TcGrey");
+                        btnToolbarTcConfig.IsEnabled = false;
+                        btnToolbarTcStart.Content = (Image)FindResource("TcGrey");
+                        btnToolbarTcStart.IsEnabled = false;
+                        btnToolbarTcStart.Background = Brushes.Transparent;
+                        btnToolbarTcStart.BorderBrush = Brushes.Transparent;
+                        btnToolbarTcConfig.Background = Brushes.Transparent;
+                        btnToolbarTcConfig.BorderBrush = Brushes.Transparent;
+                        Debug.WriteLine("Defualt state");
+                        return true;
+
+                }
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+                return false;
+            }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+
+            //Debug.WriteLine(btnToolbarTcStart.Content.ToString());
+            //Debug.WriteLine(btnToolbarTcStart);
+            //Debug.WriteLine(btnToolbarTcStart.BorderBrush);
+            //Image img = new Image();
+            //img.Source = (ImageSource)TryFindResource("TcGrey");
+            //img = (Image)TryFindResource("TcGrey");
+            //btnToolbarTcStart.Content = img.Source;
+            //btnToolbarTcStart.BitmapEffect.ToString
+            //Debug.WriteLine(btnToolbarDisconnect.Content);
+            //Debug.WriteLine(btnToolbarDisconnect.Content.ToString());
+
+            //object img = (System.Windows.Controls.Image)TryFindResource("TcGrey");
+            //Debug.WriteLine(img);
+            //btnToolbarTcStart.Content = "{Staticre}
+            // Debug.WriteLine(btnToolbarTcStart.Content.);
+            //Debug.WriteLine(btnToolbarTcStart.Content.c);
+            TriggerTest(false);
+            btnToolBarConnect.Content = (Image)FindResource("TcConfig");
+            Debug.WriteLine(FindResource("TcConfig"));
+            Debug.WriteLine(btnToolBarConnect.Content.GetType());
+        }
+
+        private bool TriggerTest(bool value)
+        {
+            Debug.WriteLine(value);
+            return value;
+        }
+
+        private void btnConnectPLC_Click(object sender, RoutedEventArgs e)
+        {
+            AdsPortConnect();
+        }
     }
 
 

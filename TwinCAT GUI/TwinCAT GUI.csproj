@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <None Remove="Resources\TcSysUI_Config.ico" />
+    <None Remove="Resources\TcSysUI_Grey.ico" />
     <None Remove="Resources\TcSysUI_Start.ico" />
   </ItemGroup>
 
@@ -20,6 +21,7 @@
 
   <ItemGroup>
     <Resource Include="Resources\TcSysUI_Config.ico" />
+    <Resource Include="Resources\TcSysUI_Grey.ico" />
     <Resource Include="Resources\TcSysUI_Start.ico" />
   </ItemGroup>
 

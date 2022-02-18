@@ -4,9 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:TwinCAT_GUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="800"
+        Title="TwinCAT ADS GUI" Height="500" Width="800" Loaded="MainWindow_OnLoaded"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
     <Window.Resources>
         <SolidColorBrush x:Key="ToolBarButtonHover" Color="#210080FF"/>
@@ -17,6 +18,12 @@
         <SolidColorBrush x:Key="ToolBarGripper" Color="#FF6D6D6D"/>
         <SolidColorBrush x:Key="ToolBarToggleButtonHorizontalBackground" Color="#FFEEF5FD"/>
         <SolidColorBrush x:Key="ToolBarToggleButtonVerticalBackground" Color="#FFEEF5FD"/>
+        <Image x:Key="TcConfig"  x:Shared="false" Source="Resources\TcSysUI_Config.ico"/>
+        <Image x:Key="TcStart"  x:Shared="false" Source="Resources\TcSysUI_Start.ico"/>
+        <Image x:Key="TcGrey"  x:Shared="false" Source="Resources\TcSysUI_Grey.ico"/>
+        <Image x:Key="TcError" x:Shared="false" Source="Resources\TcSysUI_Red.ico"/>
+        <Image x:Key="TcStarting"  x:Shared="false" Source="Resources\TcSysUI_Starting.ico"/>
+        <Image x:Key="TcConfiging"  x:Shared="false" Source="Resources\TcSysUI_Configing.ico"/>
         <Style x:Key="ToolBarMainPanelBorderStyle" TargetType="{x:Type Border}">
             <Setter Property="Margin" Value="0,0,11,0"/>
             <Setter Property="CornerRadius" Value="3,3,3,3"/>
@@ -180,6 +187,8 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+
+        
     </Window.Resources>
     <Grid>
         <DockPanel  LastChildFill="true" Grid.ColumnSpan="4" >
@@ -198,12 +207,8 @@
                 </ToolBar>
                 <ToolBar Height="30" Background="#FFF0F0F0" IsHitTestVisible="True" OverflowMode="AsNeeded" Margin="0,0,5,0">
                     <TextBlock></TextBlock>
-                    <Button x:Name="btnToolbarTcStart" ToolTip="Re/Start TwinCAT System" IsEnabled="False">
-                        <Image  Source="Resources\TcSysUI_Start.ico" />
-                    </Button>
-                    <Button x:Name="btnToolbarTcConfig" ToolTip="Set Config Mode" Foreground="#FFF0F0F0" IsEnabled="False">
-                        <Image Source="Resources\TcSysUI_Config.ico" />
-                    </Button>
+                    <Button x:Name="btnToolbarTcStart" Content ="{StaticResource TcGrey}" ToolTip="Re/Start TwinCAT System" Click="btnToolbarTcStart_Click" IsEnabled="False"/>
+                    <Button x:Name="btnToolbarTcConfig" Content ="{StaticResource TcGrey}" ToolTip="Set Config Mode" IsEnabled="False" Click="btnToolbarTcConfig_Click"/>
                 </ToolBar>
 
             </ToolBarTray>
@@ -336,9 +341,9 @@
                                 <Button x:Name="btnLog" Content="LogList" Grid.Column="7" Grid.Row="5" Click="btnLog_Click"/>
                                 <Button x:Name="btnAddNotify" Content="Notify +" Grid.Column="6" Grid.Row="3"  Click="btnAddNotify_Click"/>
                                 <Button x:Name="btnNotifySubtract" Content="Notify -" Grid.Column="7" Grid.Row="3" Click="btnNotifySubtract_Click"/>
-                                <Button Content="Connect" Grid.Row="2" Grid.Column="6" Click="Button_Click" />
+                                <Button x:Name="btnConnectPLC" Content="Connect" Grid.Row="2" Grid.Column="6" Click="btnConnectPLC_Click"/>
                                 <Button x:Name="BtnLoad" Content="Load Symbols" Grid.Column="7" Grid.Row="2" Click="BtnLoad_Click" />
-                                <Button Content="LogDebug" Grid.Column="6" Grid.Row="5"/>
+                                <Button Content="LogDebug" Grid.Column="6" Grid.Row="5" Click="Button_Click_1"/>
                             </Grid>
                         </GroupBox>
                         <GroupBox Grid.Column="9" Header="Symbol" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="7">
