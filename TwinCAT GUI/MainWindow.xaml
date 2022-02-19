@@ -344,7 +344,6 @@
                                 <Button x:Name="btnConnectPLC" Content="Connect" Grid.Row="2" Grid.Column="6" Click="btnConnectPLC_Click"/>
                                 <Button x:Name="BtnLoad" Content="Load Symbols" Grid.Column="7" Grid.Row="2" Click="BtnLoad_Click" />
                                 <Button Content="LogDebug" Grid.Column="6" Grid.Row="5" Click="Button_Click_1"/>
-                                <Button x:Name="btnSubscribe" Content="Subscribe" Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="2" Margin="0,0,73,0" Click="btnSubscribe_Click"/>
                             </Grid>
                         </GroupBox>
                         <GroupBox Grid.Column="9" Header="Symbol" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="7">
