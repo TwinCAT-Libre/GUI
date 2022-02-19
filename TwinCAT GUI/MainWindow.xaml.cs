@@ -17,7 +17,7 @@ using TwinCAT;
 using TwinCAT.Ads;
 using TwinCAT.TypeSystem;
 using TwinCAT.Ads.TypeSystem;
-using System.Buffers.Binary;
+
 
 namespace TwinCAT_GUI
 {
@@ -41,16 +41,14 @@ namespace TwinCAT_GUI
     {
         private AdsClient adsSymbolClient;
         private AdsClient adsSysSrv;
-        //private AdsClient adsRouter;
-        private AdsSession _session = null;
-
+        
         public MainWindow()
         {
             InitializeComponent();
 
         }
 
-
+        
         private void AdsServiceConnect()
         {
 
@@ -62,17 +60,10 @@ namespace TwinCAT_GUI
                 adsSysSrv = new AdsClient();
                 adsSysSrv.Connect((int)AmsPort.SystemService);
                 StateInfo AdsSysServiceState = adsSysSrv.ReadState();
-                //adsSysSrv.ConnectionStateChanged
-
-                Debug.WriteLine(adsSysSrv.ReadState().ToString());
-                Debug.WriteLine(AdsSysServiceState.AdsState);
-                Debug.WriteLine(AdsSysServiceState.DeviceState);
-
-
                 
                 if (adsSysSrv.IsConnected)
                 {
-                    //If 
+                    //If running, connect to PLC instance
                     AdsPortConnect();
                 };
                 
@@ -94,6 +85,7 @@ namespace TwinCAT_GUI
         private void AdsSysSrv_RouterStateChanged(object sender, AmsRouterNotificationEventArgs e)
         {
             Debug.WriteLine("Router State Changed");
+            //update UI icons
             Action action = () => CheckServiceState();
             Dispatcher.Invoke(action);
         }
@@ -109,9 +101,9 @@ namespace TwinCAT_GUI
                 adsSymbolClient.Connect((int)AmsPort.PlcRuntime_851);
                 StateInfo AdsSymbolClientState = adsSymbolClient.ReadState();
 
-                Debug.WriteLine(adsSymbolClient.ReadState().ToString());
-                Debug.WriteLine(AdsSymbolClientState.AdsState);
-                Debug.WriteLine(AdsSymbolClientState.DeviceState);
+                //Debug.WriteLine(adsSymbolClient.ReadState().ToString());
+                //Debug.WriteLine(AdsSymbolClientState.AdsState);
+                //Debug.WriteLine(AdsSymbolClientState.DeviceState);
 
             }
             catch (Exception err)
@@ -142,9 +134,6 @@ namespace TwinCAT_GUI
 
 
         }
-
-
-
 
         private void LoadSymbols()
         {
@@ -379,6 +368,7 @@ namespace TwinCAT_GUI
             //ListViewSymbolsWatchlist.Items.Refresh();
             //TriggerTest(true);
             //btnToolBarConnect.Content = "True"; 
+            
         }
 
         private void BtnLoad_Click(object sender, RoutedEventArgs e)
@@ -463,5 +453,18 @@ namespace TwinCAT_GUI
             AdsPortConnect();
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine(adsSymbolClient.IsLocal +  " IsLocal");
+            Debug.WriteLine(adsSymbolClient.IsConnected + " IsConnected");
+            Debug.WriteLine(adsSymbolClient.ReadState() + " State");
+            Debug.WriteLine(adsSymbolClient.ReadState().ToString() + " State");
+            StateInfo AdsSymbolClientState = adsSymbolClient.ReadState();
+
+            Debug.WriteLine(adsSymbolClient.ReadState().ToString() + " adsSymbolClient ReadState");
+            Debug.WriteLine(AdsSymbolClientState.AdsState + " AdsState"); // returns run/stop of PLC runtime
+            Debug.WriteLine(AdsSymbolClientState.DeviceState + " DeviceState"); //does nothing
+
+        }
     }
 }
