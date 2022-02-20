@@ -339,8 +339,12 @@ namespace TwinCAT_GUI
 
         private void btnRemoveWatchlistItem_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("removing " + ListViewSymbolsWatchlist.SelectedItem + " from watchlist");
-            SymbolListWatchItem removeItem = (SymbolListWatchItem)ListViewSymbolsWatchlist.SelectedItem;
+            
+            ListViewSymbolsWatchlist.Items.Remove(ListViewSymbolsWatchlist.SelectedItem);
+            SymbolListWatchItem SelectedSymbol = (SymbolListWatchItem)ListViewSymbolsWatchlist.SelectedItem;
+            Debug.WriteLine("removing " + SelectedSymbol.SymbolPath + " from watchlist");
+            UnRegisterNotification(SelectedSymbol.SymbolHandle);
+
         }
 
 

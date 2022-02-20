@@ -315,11 +315,11 @@
                                     <ListView.View>
 
                                         <GridView AllowsColumnReorder="true" ColumnHeaderToolTip="Symbol Watchlist">
-                                            <GridViewColumn DisplayMemberBinding="{Binding symbolHandle}" Header="Handle" Width="50"/>
-                                            <GridViewColumn DisplayMemberBinding="{Binding symbolPath}" Header="Symbol" Width="250"/>
-                                            <GridViewColumn DisplayMemberBinding="{Binding symbolDataType}" Header="Data Type" Width="100"/>
-                                            <GridViewColumn DisplayMemberBinding="{Binding symbolValue}" Header="Value" Width="100"/>
-                                            <GridViewColumn DisplayMemberBinding="{Binding symbolUpdateTime}" Header="Update Time" Width="150"/>
+                                            <GridViewColumn DisplayMemberBinding="{Binding SymbolHandle}" Header="Handle" Width="50"/>
+                                            <GridViewColumn DisplayMemberBinding="{Binding SymbolPath}" Header="Symbol" Width="250"/>
+                                            <GridViewColumn DisplayMemberBinding="{Binding SymbolDataType}" Header="Data Type" Width="100"/>
+                                            <GridViewColumn DisplayMemberBinding="{Binding SymbolValue}" Header="Value" Width="100"/>
+                                            <GridViewColumn DisplayMemberBinding="{Binding SymbolUpdateTime}" Header="Update Time" Width="150"/>
                                         </GridView>
 
                                     </ListView.View>
@@ -350,9 +350,10 @@
                                 </Grid.RowDefinitions>
                                 <TreeView x:Name="TreeViewSymbols" Grid.ColumnSpan="6" Grid.RowSpan="4"  SelectedItemChanged="TreeViewSymbols_SelectedItemChanged"/>
                                 <Button x:Name="btnLoadSymbols" Content="Load Symbols" Grid.Column="6" Grid.ColumnSpan="2" Grid.Row="0" Margin="5,5,5,5" Click="btnLoadSymbols_Click" IsEnabled="False"/>
-                                <Button x:Name="btnLogList" Content="LogList" Grid.Column="7" Grid.Row="5" Click="btnLogList_Click"/>
-                                <Button x:Name="btnLogDebug" Content="LogDebug" Grid.Column="6" Grid.Row="5" Click="btnLogDebug_Click" />
+                                <Button x:Name="btnLogList" Content="LogList" Grid.Column="7" Grid.Row="2" Click="btnLogList_Click"/>
+                                <Button x:Name="btnLogDebug" Content="LogDebug" Grid.Column="6" Grid.Row="2" Click="btnLogDebug_Click" />
                                 <Button x:Name="btnAddToWatchlist" Content="Add to Watchlist" Grid.Column="6" Grid.ColumnSpan="2" Grid.Row="1" Margin="5,5,5,5" IsEnabled="False" Click="btnAddToWatchlist_Click" />
+                                <Button x:Name="btnWriteSymbol" Content="Write Symbol" Grid.Column="6" Grid.ColumnSpan="2" Grid.Row="4" Margin="5,5,5,5" IsEnabled="False"/>
                             </Grid>
                         </GroupBox>
                         <GroupBox Grid.Column="9" Header="Symbol" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="7">
@@ -395,7 +396,6 @@
                                 <TextBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="4" IsEnabled="False"/>
                                 <TextBlock Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Text="Value: " HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                 <TextBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="4" IsEnabled="False"/>
-                                <Button x:Name="btnWriteSymbol" Content="Write Symbol" Grid.Column="3" Grid.Row="9" Grid.ColumnSpan="3" IsEnabled="False" Margin="1,1,1,1"/>
                             </Grid>
 
                         </GroupBox>
