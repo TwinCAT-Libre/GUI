@@ -201,22 +201,24 @@
             <ToolBarTray DockPanel.Dock="Top" Background="#FFF0F0F0">
                 <ToolBar Background="#FFF0F0F0">
                     <TextBlock Text="Target: " VerticalAlignment="Center"></TextBlock>
-
                     <Button x:Name="btnToolBarConnect" Content="Connect" Click="btnToolBarConnect_Click" />
                     <Button x:Name="btnToolbarDisconnect" Content="Disconnect" Click="btnToolbarDisconnect_Click" />
                 </ToolBar>
-                
-                <ToolBar x:Name="TbPLC" Height="30" Background="#FFF0F0F0" IsHitTestVisible="True" OverflowMode="AsNeeded" HorizontalContentAlignment="Left">
-                    <TextBlock Text="PLC: " VerticalAlignment="Center"></TextBlock>
-                    <Button x:Name="btnToolbarPLCStart" Content ="{iconPacks:MaterialDesign Kind=PlayArrow}" ToolTip="Re/Start TwinCAT System" Click="btnToolbarTcStart_Click" IsEnabled="False" Background="Transparent" Foreground="#FF10CB29"/>
-                    <Button x:Name="btnToolbarPLCStop" Content ="{iconPacks:MaterialDesign Kind=Stop}" ToolTip="Set Config Mode" IsEnabled="False" Click="btnToolbarTcConfig_Click" Foreground="#FFE00D0D"/>
-                    
-                </ToolBar>
-                <ToolBar x:Name="TbService">
+
+                <ToolBar x:Name="TbService" Height="30" Background="#FFF0F0F0" IsHitTestVisible="True" OverflowMode="AsNeeded" HorizontalContentAlignment="Left">
                     <TextBlock Text="Service: " VerticalAlignment="Center"></TextBlock>
                     <Button x:Name="btnToolbarTcStart" Content ="{StaticResource TcGrey}" ToolTip="Re/Start TwinCAT System" Click="btnToolbarTcStart_Click" IsEnabled="False"/>
                     <Button x:Name="btnToolbarTcConfig" Content ="{StaticResource TcGrey}" ToolTip="Set Config Mode" IsEnabled="False" Click="btnToolbarTcConfig_Click"/>
                 </ToolBar>
+
+
+                <ToolBar x:Name="TbPLC" Height="30" Background="#FFF0F0F0" IsHitTestVisible="True" OverflowMode="AsNeeded" HorizontalContentAlignment="Left">
+                    <TextBlock Text="PLC: " VerticalAlignment="Center"></TextBlock>
+                    <Button x:Name="btnToolbarPLCStart" Content ="{iconPacks:MaterialDesign Kind=PlayArrow}" ToolTip="Re/Start TwinCAT System"  IsEnabled="False" Background="Transparent" Foreground="Gray" HorizontalAlignment="Left" VerticalAlignment="Top" Click="btnToolbarPLCStart_Click"/>
+                    <Button x:Name="btnToolbarPLCStop" Content ="{iconPacks:MaterialDesign Kind=Stop}" ToolTip="Set Config Mode" IsEnabled="False"  Foreground="Gray" Click="btnToolbarPLCStop_Click"/>
+                    
+                </ToolBar>
+                
 
        
 
@@ -307,8 +309,8 @@
 
                                 <Button x:Name="btnClearWatchlist" Click="btnClearWatchlist_Click" Grid.ColumnSpan="2" Grid.Column="10" Margin="2,2,2,2" Content="{iconPacks:MaterialDesign DeleteSweep}"/>
                                 <Button x:Name="btnRemoveWatchlistItem" Click="btnRemoveWatchlistItem_Click"  Grid.Column="10" Grid.Row="1" Grid.ColumnSpan="2" Margin="2,2,2,2" Content="{iconPacks:MaterialDesign DeleteForever}"/>
-                                <Button x:Name="btnResume" Click="btnRemoveWatchlistItem_Click" Grid.Column="10" Grid.Row="2" Grid.ColumnSpan="2" Margin="2,2,2,2" Content="{iconPacks:MaterialDesign PlayArrow}"/>
-                                <Button x:Name="btnPause"  Grid.Column="10" Grid.Row="3" Grid.ColumnSpan="2" Margin="2,2,2,2" Content="{iconPacks:MaterialDesign Pause}"/>
+                                <Button x:Name="btnResumeSymbolUpdates" Grid.Column="10" Grid.Row="2" Grid.ColumnSpan="2" Margin="2,2,2,2" Content="{iconPacks:MaterialDesign PlayArrow}" Click="btnResumeSymbolUpdates_Click"/>
+                                <Button x:Name="BtnPauseSymbolUpdates"  Grid.Column="10" Grid.Row="3" Grid.ColumnSpan="2" Margin="2,2,2,2" Content="{iconPacks:MaterialDesign Pause}" Click="BtnPauseSymbolUpdates_Click"/>
                                 <ListView x:Name="ListViewSymbolsWatchlist" Grid.ColumnSpan="10" Grid.RowSpan="4">
                                     <ListView.View>
 
@@ -346,14 +348,11 @@
                                     <RowDefinition Height="*"/>
 
                                 </Grid.RowDefinitions>
-                                <TreeView x:Name="treeViewSymbols" Grid.ColumnSpan="6" Grid.RowSpan="4"  SelectedItemChanged="treeViewSymbols_SelectedItemChanged"/>
-                                <Button Content="Reload" Grid.Column="6" Grid.ColumnSpan="2" Grid.Row="0" Margin="5,5,5,5"/>
-                                <Button x:Name="btnLog" Content="LogList" Grid.Column="7" Grid.Row="5" Click="btnLog_Click"/>
-                                <Button x:Name="btnAddNotify" Content="Notify +" Grid.Column="6" Grid.Row="3"  Click="btnAddNotify_Click"/>
-                                <Button x:Name="btnNotifySubtract" Content="Notify -" Grid.Column="7" Grid.Row="3" Click="btnNotifySubtract_Click"/>
-                                <Button x:Name="btnConnectPLC" Content="Connect" Grid.Row="2" Grid.Column="6" Click="btnConnectPLC_Click"/>
-                                <Button x:Name="BtnLoad" Content="Load Symbols" Grid.Column="7" Grid.Row="2" Click="BtnLoad_Click" />
-                                <Button Content="LogDebug" Grid.Column="6" Grid.Row="5" Click="Button_Click" />
+                                <TreeView x:Name="TreeViewSymbols" Grid.ColumnSpan="6" Grid.RowSpan="4"  SelectedItemChanged="TreeViewSymbols_SelectedItemChanged"/>
+                                <Button x:Name="btnLoadSymbols" Content="Load Symbols" Grid.Column="6" Grid.ColumnSpan="2" Grid.Row="0" Margin="5,5,5,5" Click="btnLoadSymbols_Click" IsEnabled="False"/>
+                                <Button x:Name="btnLogList" Content="LogList" Grid.Column="7" Grid.Row="5" Click="btnLogList_Click"/>
+                                <Button x:Name="btnLogDebug" Content="LogDebug" Grid.Column="6" Grid.Row="5" Click="btnLogDebug_Click" />
+                                <Button x:Name="btnAddToWatchlist" Content="Add to Watchlist" Grid.Column="6" Grid.ColumnSpan="2" Grid.Row="1" Margin="5,5,5,5" IsEnabled="False" Click="btnAddToWatchlist_Click" />
                             </Grid>
                         </GroupBox>
                         <GroupBox Grid.Column="9" Header="Symbol" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="7">
@@ -396,7 +395,6 @@
                                 <TextBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="4" IsEnabled="False"/>
                                 <TextBlock Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Text="Value: " HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                 <TextBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="4" IsEnabled="False"/>
-                                <Button x:Name="btnAddToWatchlist" Content="Add to Watchlist" Grid.Row="9" Grid.ColumnSpan="3" IsEnabled="False" Click="btnAddToWatchlist_Click" Margin="1,1,1,1"/>
                                 <Button x:Name="btnWriteSymbol" Content="Write Symbol" Grid.Column="3" Grid.Row="9" Grid.ColumnSpan="3" IsEnabled="False" Margin="1,1,1,1"/>
                             </Grid>
 

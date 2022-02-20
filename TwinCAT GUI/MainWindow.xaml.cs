@@ -23,13 +23,13 @@ namespace TwinCAT_GUI
 {
 
 
-    public class symbolListWatchItem
+    public class SymbolListWatchItem
     {
-        public uint symbolHandle { get; set; }
-        public string symbolPath { get; set; }
-        public string symbolDataType { get; set; }
-        public string symbolValue { get; set; }
-        public string symbolTimestamp { get; set; }
+        public uint SymbolHandle { get; set; }
+        public string SymbolPath { get; set; }
+        public string SymbolDataType { get; set; }
+        public string SymbolValue { get; set; }
+        public string SymbolTimestamp { get; set; }
 
     }
 
@@ -39,8 +39,12 @@ namespace TwinCAT_GUI
     /// </summary>
     public partial class MainWindow : Window
     {
-        private AdsClient adsSymbolClient;
+        private AdsClient adsPLCRuntime;
         private AdsClient adsSysSrv;
+        private AdsClient adsLicenceServer;
+
+        private bool TcPLCIsConnected = false;
+        
         
         public MainWindow()
         {
@@ -49,9 +53,8 @@ namespace TwinCAT_GUI
         }
 
         
-        private void AdsServiceConnect()
+        private void AdsSystemServiceConnect()
         {
-
             //connect to the target system ADS server and PLC symbol runtime
             //ToDo make target remotely targetable, and PLC port selectable
             try
@@ -59,14 +62,18 @@ namespace TwinCAT_GUI
                 //connect to system service (runtime)
                 adsSysSrv = new AdsClient();
                 adsSysSrv.Connect((int)AmsPort.SystemService);
-                StateInfo AdsSysServiceState = adsSysSrv.ReadState();
-                
-                if (adsSysSrv.IsConnected)
+                //StateInfo AdsSysServiceState = adsSysSrv.ReadState();
+                //UI update reads, connect to PLC runtime if in run mode
+                if (CheckServiceState(adsSysSrv.ReadState()) == 1)
                 {
-                    //If running, connect to PLC instance
-                    AdsPortConnect();
-                };
-                
+                    Debug.WriteLine("System Service in Run Mode... Trying to connect to PLC");
+                    AdsPLCPortConnect();
+                }
+                else
+                {
+                    Debug.WriteLine("System Service NOT in Run Mode....");
+                }
+
             }
             catch (Exception err)
             {
@@ -76,40 +83,56 @@ namespace TwinCAT_GUI
 
             adsSysSrv.RouterStateChanged += AdsSysSrv_RouterStateChanged;
 
-            //UI update reads
-            CheckServiceState();
+
 
         }
 
 
         private void AdsSysSrv_RouterStateChanged(object sender, AmsRouterNotificationEventArgs e)
         {
-            Debug.WriteLine("Router State Changed");
+            Debug.WriteLine("System Service Router State Changed");
+            Debug.WriteLine(e.State.ToString() + " AMSRouter State"); //always flags "Start for some reason"
+            Debug.WriteLine(sender.ToString());
+            
+
             //update UI icons
-            Action action = () => CheckServiceState();
+            Action action = () => CheckServiceState(adsSysSrv.ReadState());
             Dispatcher.Invoke(action);
         }
 
 
 
-        private void AdsPortConnect()
+        private void AdsPLCPortConnect()
         {
             try
             {
                 //connect to PLC instance
-                adsSymbolClient = new AdsClient();
-                adsSymbolClient.Connect((int)AmsPort.PlcRuntime_851);
-                StateInfo AdsSymbolClientState = adsSymbolClient.ReadState();
+                adsPLCRuntime = new AdsClient();
+                adsPLCRuntime.Connect((int)AmsPort.PlcRuntime_851);
+                StateInfo AdsSymbolClientState = adsPLCRuntime.ReadState();
 
-                //Debug.WriteLine(adsSymbolClient.ReadState().ToString());
+                TcPLCIsConnected = true;
+                //Debug.WriteLine(adsPLCRuntime.ReadState().ToString());
                 //Debug.WriteLine(AdsSymbolClientState.AdsState);
                 //Debug.WriteLine(AdsSymbolClientState.DeviceState);
 
             }
             catch (Exception err)
             {
+                TcPLCIsConnected = false;
                 MessageBox.Show(err.Message);
             }
+
+            adsPLCRuntime.AdsStateChanged += AdsPLCRuntime_AdsStateChanged;
+        }
+
+
+        private void AdsPLCRuntime_AdsStateChanged(object sender, AdsStateChangedEventArgs e)
+        {
+            Debug.WriteLine("EVENT: PLC Ads State Changed to: " + e.State.AdsState);            
+            Action action = () => CheckPLCState(adsSysSrv.ReadState());
+            Dispatcher.Invoke(action);
+
         }
 
         private void AdsDisconnect()
@@ -120,9 +143,9 @@ namespace TwinCAT_GUI
             {
 
                 adsSysSrv.Dispose();
-                adsSymbolClient.Dispose();
+                adsPLCRuntime.Dispose();
                 adsSysSrv.Disconnect();
-                adsSymbolClient.Disconnect();
+                adsPLCRuntime.Disconnect();
 
                 //ToDo Update UI
 
@@ -140,16 +163,16 @@ namespace TwinCAT_GUI
             //Populate the symbols into the tree
             Debug.WriteLine("Attempting to load symbols");
             //empty the treeview
-            treeViewSymbols.Items.Clear();
+            TreeViewSymbols.Items.Clear();
 
             try
             {
 
-                ISymbolLoader loader = SymbolLoaderFactory.Create(adsSymbolClient, SymbolLoaderSettings.Default);
+                ISymbolLoader loader = SymbolLoaderFactory.Create(adsPLCRuntime, SymbolLoaderSettings.Default);
                 foreach (Symbol symbol in loader.Symbols)
                 {
                     Debug.WriteLine("///////////////" + symbol + "///////////////");
-                    treeViewSymbols.Items.Add(SymbolsToTreeView(symbol));
+                    TreeViewSymbols.Items.Add(SymbolsToTreeView(symbol));
                 }
 
             }
@@ -193,10 +216,10 @@ namespace TwinCAT_GUI
             return TreeItem;
         }
 
-        private void treeUpdateUI(string symbolstr)
+        private void TreeUpdateUI(string symbolstr)
         {
             // Use typed object to use InfoTips
-            ISymbolLoader loader = SymbolLoaderFactory.Create(adsSymbolClient, SymbolLoaderSettings.Default);
+            ISymbolLoader loader = SymbolLoaderFactory.Create(adsPLCRuntime, SymbolLoaderSettings.Default);
             try
             {
                 Symbol symbol = (Symbol)loader.Symbols[symbolstr];
@@ -212,7 +235,6 @@ namespace TwinCAT_GUI
             }
             catch (Exception err)
             {
-                //MessageBox.Show(err.Message);
                 Debug.WriteLine(err.Message);
                 btnAddToWatchlist.IsEnabled = false;
             }
@@ -223,10 +245,11 @@ namespace TwinCAT_GUI
 
 
 
-        private void treeViewSymbols_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void TreeViewSymbols_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             //if the item is a primitive, allow the 'add to watchlist' button to be enabled
-            treeUpdateUI(treeViewSymbols.SelectedItem.ToString());
+            TreeUpdateUI(TreeViewSymbols.SelectedItem.ToString());
+            //PopulateSymbolInfo();
         }
 
 
@@ -237,14 +260,14 @@ namespace TwinCAT_GUI
             uint notificationHandle; //increments automatically if called more than once
 
             // Check for change every 200 ms
-            notificationHandle = adsSymbolClient.AddDeviceNotificationEx(mySymbol.InstancePath, new NotificationSettings(AdsTransMode.OnChange, 200, 0), mySymbol.InstancePath, mySymbol.ReadValue().GetType());
+            notificationHandle = adsPLCRuntime.AddDeviceNotificationEx(mySymbol.InstancePath, new NotificationSettings(AdsTransMode.OnChange, 200, 0), mySymbol.InstancePath, mySymbol.ReadValue().GetType());
             return notificationHandle;
         }
 
         private void UnRegisterNotification(uint notificationHandle)
         {
             // Add the Notification event handler
-            adsSymbolClient.DeleteDeviceNotification(notificationHandle);
+            adsPLCRuntime.DeleteDeviceNotification(notificationHandle);
         }
 
         private void Client_AdsNotificationEx(object sender, AdsNotificationExEventArgs e)
@@ -253,14 +276,13 @@ namespace TwinCAT_GUI
             Debug.WriteLine(e.UserData.ToString() + " : " + e.Value.ToString() + " Handle: " + e.Handle.ToString() + " " + e.TimeStamp.ToString());
 
             //ToDo - find more efficient way rather than a for loop
-            foreach (symbolListWatchItem watchedSymbol in ListViewSymbolsWatchlist.Items)
+            foreach (SymbolListWatchItem watchedSymbol in ListViewSymbolsWatchlist.Items)
             {
-                if (watchedSymbol.symbolHandle == e.Handle)
+                if (watchedSymbol.SymbolHandle == e.Handle)
                 {
-                    watchedSymbol.symbolValue = e.Value.ToString();
+                    watchedSymbol.SymbolValue = e.Value.ToString();
                 }
             }
-
 
             //for threading reasons
             Action action = () => ListViewSymbolsWatchlist.Items.Refresh();
@@ -274,19 +296,34 @@ namespace TwinCAT_GUI
             //resumes and pauses the update of the ads notifications
             if (Enable)
             {
-                adsSymbolClient.AdsNotificationEx += Client_AdsNotificationEx;
+                adsPLCRuntime.AdsNotificationEx += Client_AdsNotificationEx;
             }
             else
             {
-                adsSymbolClient.AdsNotificationEx -= Client_AdsNotificationEx;
+                adsPLCRuntime.AdsNotificationEx -= Client_AdsNotificationEx;
             }
 
+        }
+
+
+        private void SetTCState(AdsClient adsClient,AdsState state)
+        {
+            Debug.WriteLine("Setting " + (AmsPort)adsClient.Address.Port + " to state: " + state.ToString() );
+            try
+            {
+                adsClient.TryWriteControl(new StateInfo(state, adsSysSrv.ReadState().DeviceState));
+
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+            }
         }
         /////////////////////////////////////////////////////////////////////////////////////////
         // UI Button actions
         private void btnToolBarConnect_Click(object sender, RoutedEventArgs e)
         {
-            AdsServiceConnect();
+            AdsSystemServiceConnect();
         }
 
         private void btnToolbarDisconnect_Click(object sender, RoutedEventArgs e)
@@ -303,103 +340,47 @@ namespace TwinCAT_GUI
         private void btnRemoveWatchlistItem_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("removing " + ListViewSymbolsWatchlist.SelectedItem + " from watchlist");
-            symbolListWatchItem removeItem = (symbolListWatchItem)ListViewSymbolsWatchlist.SelectedItem;
+            SymbolListWatchItem removeItem = (SymbolListWatchItem)ListViewSymbolsWatchlist.SelectedItem;
         }
 
 
         private void btnAddToWatchlist_Click(object sender, RoutedEventArgs e)
         {
-            ISymbolLoader loader = SymbolLoaderFactory.Create(adsSymbolClient, SymbolLoaderSettings.Default);
+            ISymbolLoader loader = SymbolLoaderFactory.Create(adsPLCRuntime, SymbolLoaderSettings.Default);
 
-            Symbol symbol = (Symbol)loader.Symbols[treeViewSymbols.SelectedItem.ToString()];
+            Symbol symbol = (Symbol)loader.Symbols[TreeViewSymbols.SelectedItem.ToString()];
 
             //add to notification
             uint handleNumber = RegisterNotification(symbol);
 
-            ListViewSymbolsWatchlist.Items.Add(new symbolListWatchItem
+            ListViewSymbolsWatchlist.Items.Add(new SymbolListWatchItem
             {
-                symbolHandle = handleNumber,
-                symbolPath = symbol.InstancePath,
-                symbolDataType = symbol.DataType.ToString(),
-                symbolValue = symbol.ReadValue().ToString()
+                SymbolHandle = handleNumber,
+                SymbolPath = symbol.InstancePath,
+                SymbolDataType = symbol.DataType.ToString(),
+                SymbolValue = symbol.ReadValue().ToString()
             });
         }
 
 
         private void btnToolbarTcStart_Click(object sender, RoutedEventArgs e)
         {
-            SetTCState(AdsState.Reset);
+            SetTCState(adsSysSrv, AdsState.Reset);
         }
 
         private void btnToolbarTcConfig_Click(object sender, RoutedEventArgs e)
         {
-            SetTCState(AdsState.Reconfig);
+            SetTCState(adsSysSrv, AdsState.Reconfig);
         }
 
-        private void SetTCState(AdsState state)
+        private int CheckServiceState(StateInfo stateInfo)
         {
-            Debug.WriteLine("Setting state " + state);
+            Debug.WriteLine("EVENT: Checking Service State:");
             try
             {
-                adsSysSrv.TryWriteControl(new StateInfo(state, adsSysSrv.ReadState().DeviceState));
-
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show(err.Message);
-            }
-        }
-
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-        //Garbage to be deleted later
-
-        private void btnLog_Click(object sender, RoutedEventArgs e)
-        {
-            //Debug.WriteLine(ListViewSymbolsWatchlist.SelectedItem);
-            //Debug.WriteLine(ListViewSymbolsWatchlist.Items[0].ToString()); //first item in listview
-            //Debug.WriteLine(ListViewSymbolsWatchlist.)
-            // ListViewSymbolsWatchlist.
-            //foreach (symbolListWatchItem watchedSymbol in ListViewSymbolsWatchlist.Items) {
-            //  Debug.WriteLine(watchedSymbol.symbolHandle);
-            //  Debug.WriteLine(watchedSymbol);
-            //  watchedSymbol.symbolValue = "hi";
-            //}
-            //ListViewSymbolsWatchlist.Items.Refresh();
-            //TriggerTest(true);
-            //btnToolBarConnect.Content = "True"; 
-            
-        }
-
-        private void BtnLoad_Click(object sender, RoutedEventArgs e)
-        {
-            LoadSymbols();
-        }
-        private void btnNotifySubtract_Click(object sender, RoutedEventArgs e)
-        {
-            SymbolNotification(false);
-        }
-
-        private void btnAddNotify_Click(object sender, RoutedEventArgs e)
-        {
-            SymbolNotification(true);
-        }
-
-
-
-
- 
-
-
-        private bool CheckServiceState()
-        {
-            try
-            {
-                Debug.WriteLine(adsSysSrv.ReadState().AdsState + " Ads State");
-                Debug.WriteLine(adsSysSrv.ReadState().AdsState.ToString() + " Ads State ToString");
-                switch (adsSysSrv.ReadState().AdsState.ToString())
+                switch (stateInfo.AdsState)
                 {
-                    case "Run":
+                    case AdsState.Run:
                         //style UI buttons
                         btnToolbarTcConfig.Content = (Image)FindResource("TcConfig");
                         btnToolbarTcConfig.IsEnabled = true;
@@ -409,11 +390,10 @@ namespace TwinCAT_GUI
                         btnToolbarTcStart.BorderBrush = Brushes.Black;
                         btnToolbarTcConfig.Background = Brushes.Transparent;
                         btnToolbarTcConfig.BorderBrush = Brushes.Transparent;
-                        Debug.WriteLine("Run state");
+                        Debug.WriteLine("Service in Run state");
+                        return 1;
 
-                        return true;
-
-                    case "Config":
+                    case AdsState.Config:
                         //style UI buttons
                         btnToolbarTcConfig.Content = (Image)FindResource("TcConfig");
                         btnToolbarTcConfig.IsEnabled = true;
@@ -423,8 +403,8 @@ namespace TwinCAT_GUI
                         btnToolbarTcStart.BorderBrush = Brushes.Transparent;
                         btnToolbarTcConfig.Background = Brushes.White;
                         btnToolbarTcConfig.BorderBrush = Brushes.Black;
-                        Debug.WriteLine("Config state");
-                        return true;
+                        Debug.WriteLine("Service in Config state");
+                        return 0;
 
                     default:
                         btnToolbarTcConfig.Content = (Image)FindResource("TcGrey");
@@ -435,36 +415,144 @@ namespace TwinCAT_GUI
                         btnToolbarTcStart.BorderBrush = Brushes.Transparent;
                         btnToolbarTcConfig.Background = Brushes.Transparent;
                         btnToolbarTcConfig.BorderBrush = Brushes.Transparent;
-                        Debug.WriteLine("Defualt state");
-                        return true;
+                        Debug.WriteLine("Service in unknown state");
+                        return 99;
 
                 }
+
+                
             }
             catch (Exception err)
             {
                 MessageBox.Show(err.Message);
-                return false;
+                return 99;
+            }
+            finally
+            {
+                //check PLC service, or connect if not connected
+                if (stateInfo.AdsState == AdsState.Run & !TcPLCIsConnected)
+                {
+                    AdsPLCPortConnect();
+                } 
+                else{
+                    CheckPLCState(adsSysSrv.ReadState());
+                }
             }
         }
 
-
-        private void btnConnectPLC_Click(object sender, RoutedEventArgs e)
+        private void btnLoadSymbols_Click(object sender, RoutedEventArgs e)
         {
-            AdsPortConnect();
+            LoadSymbols();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine(adsSymbolClient.IsLocal +  " IsLocal");
-            Debug.WriteLine(adsSymbolClient.IsConnected + " IsConnected");
-            Debug.WriteLine(adsSymbolClient.ReadState() + " State");
-            Debug.WriteLine(adsSymbolClient.ReadState().ToString() + " State");
-            StateInfo AdsSymbolClientState = adsSymbolClient.ReadState();
 
-            Debug.WriteLine(adsSymbolClient.ReadState().ToString() + " adsSymbolClient ReadState");
-            Debug.WriteLine(AdsSymbolClientState.AdsState + " AdsState"); // returns run/stop of PLC runtime
-            Debug.WriteLine(AdsSymbolClientState.DeviceState + " DeviceState"); //does nothing
+        private void CheckPLCState(StateInfo RouterStateInfo)
+        {
+            Debug.WriteLine("Checking PLC State:....");
+            //Check system service state
+            if (RouterStateInfo.AdsState == AdsState.Run)
+            {
+                //AdsState PLCState = adsPLCRuntime.ReadState().AdsState;
+                switch (adsPLCRuntime.ReadState().AdsState)
+                {
+                    case AdsState.Run:
+                        //style UI buttons
+                        btnToolbarPLCStart.Foreground = Brushes.Green;
+                        btnToolbarPLCStart.IsEnabled = true;
+                        btnToolbarPLCStart.Background = Brushes.White;
+                        btnToolbarPLCStart.BorderBrush = Brushes.Black;
+
+                        btnToolbarPLCStop.Foreground = Brushes.Red;
+                        btnToolbarPLCStop.IsEnabled = true;
+                        btnToolbarPLCStop.Background = Brushes.Transparent;
+                        btnToolbarPLCStop.BorderBrush = Brushes.Transparent;
+
+                        btnLoadSymbols.IsEnabled = true;
+
+                        Debug.WriteLine("   PLC in Run state");
+                        return;
+
+                    case AdsState.Stop:
+                        //style UI buttons
+
+                        btnToolbarPLCStart.Foreground = Brushes.Green;
+                        btnToolbarPLCStart.IsEnabled = true;
+                        btnToolbarPLCStart.Background = Brushes.Transparent;
+                        btnToolbarPLCStart.BorderBrush = Brushes.Transparent;
+
+                        btnToolbarPLCStop.Foreground = Brushes.Red;
+                        btnToolbarPLCStop.IsEnabled = true;
+                        btnToolbarPLCStop.Background = Brushes.White;
+                        btnToolbarPLCStop.BorderBrush = Brushes.Black;
+
+                        btnLoadSymbols.IsEnabled = false;
+
+                        Debug.WriteLine("   PLC in Stop state");
+                        return;
+                }
+
+            }
+            else
+            {
+                Debug.WriteLine("System Service in Config state, Disabling PLC contol buttons");
+                btnToolbarPLCStart.Foreground = Brushes.Gray;
+                btnToolbarPLCStart.IsEnabled = false;
+                btnToolbarPLCStart.Background = Brushes.Transparent;
+                btnToolbarPLCStart.BorderBrush = Brushes.Transparent;
+
+
+                btnToolbarPLCStop.Foreground = Brushes.Gray;
+                btnToolbarPLCStop.IsEnabled = false;
+                btnToolbarPLCStop.Background = Brushes.Transparent;
+                btnToolbarPLCStop.BorderBrush = Brushes.Transparent;
+
+                
+                return;
+            }
+
+
 
         }
+
+
+        private void btnToolbarPLCStart_Click(object sender, RoutedEventArgs e)
+        {
+            //Start the PLC runtime
+            SetTCState(adsPLCRuntime, AdsState.Run);
+        }
+
+        private void btnToolbarPLCStop_Click(object sender, RoutedEventArgs e)
+        {
+            //Stop the PLC runtime
+            SetTCState(adsPLCRuntime, AdsState.Stop);
+        }
+
+
+        private void BtnPauseSymbolUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            //pause reading of the watchlist symbols
+            SymbolNotification(false);
+        }
+
+        private void btnResumeSymbolUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            //resume reading of the watchlist symbols
+            SymbolNotification(true);
+        }
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        //for removal later
+
+        private void btnLogList_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnLogDebug_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
     }
 }
