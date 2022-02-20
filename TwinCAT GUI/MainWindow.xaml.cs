@@ -407,8 +407,15 @@ namespace TwinCAT_GUI
 
             //add to notification
             uint handleNumber = RegisterNotification(symbol);
+            Debug.WriteLine(ListViewSymbolsWatchlist.Items.Count + " Items in Watchlist");
+            if (ListViewSymbolsWatchlist.Items.Count == 0) 
+            {
+                SymbolNotification(true); //subscribe to events if nothing is present
+            }
 
-            ListViewSymbolsWatchlist.Items.Add(new SymbolListWatchItem
+
+
+                ListViewSymbolsWatchlist.Items.Add(new SymbolListWatchItem
             {
                 SymbolHandle = handleNumber,
                 SymbolPath = symbol.InstancePath,
