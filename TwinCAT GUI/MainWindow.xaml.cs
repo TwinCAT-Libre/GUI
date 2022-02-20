@@ -41,7 +41,6 @@ namespace TwinCAT_GUI
     {
         private AdsClient adsPLCRuntime;
         private AdsClient adsSysSrv;
-        private AdsClient adsLicenceServer;
 
         private bool TcPLCIsConnected = false;
         
@@ -62,7 +61,6 @@ namespace TwinCAT_GUI
                 //connect to system service (runtime)
                 adsSysSrv = new AdsClient();
                 adsSysSrv.Connect((int)AmsPort.SystemService);
-                //StateInfo AdsSysServiceState = adsSysSrv.ReadState();
                 //UI update reads, connect to PLC runtime if in run mode
                 if (CheckServiceState(adsSysSrv.ReadState()) == 1)
                 {
@@ -79,12 +77,7 @@ namespace TwinCAT_GUI
             {
                 MessageBox.Show(err.Message);
             }
-
-
             adsSysSrv.RouterStateChanged += AdsSysSrv_RouterStateChanged;
-
-
-
         }
 
 
@@ -94,7 +87,6 @@ namespace TwinCAT_GUI
             Debug.WriteLine(e.State.ToString() + " AMSRouter State"); //always flags "Start for some reason"
             Debug.WriteLine(sender.ToString());
             
-
             //update UI icons
             Action action = () => CheckServiceState(adsSysSrv.ReadState());
             Dispatcher.Invoke(action);
@@ -152,10 +144,8 @@ namespace TwinCAT_GUI
             }
             catch (Exception err)
             {
-                MessageBox.Show(err.Message);
+                //MessageBox.Show(err.Message);
             }
-
-
         }
 
         private void LoadSymbols()
@@ -164,7 +154,7 @@ namespace TwinCAT_GUI
             Debug.WriteLine("Attempting to load symbols");
             //empty the treeview
             TreeViewSymbols.Items.Clear();
-
+            
             try
             {
 
@@ -225,15 +215,13 @@ namespace TwinCAT_GUI
                 
                 Symbol symbol = (Symbol)loader.Symbols[symbolstr];
                 // Debug.WriteLine(symbol.ReadValue());
-                UpdateSymbolDataWindow(symbol);
+                Debug.WriteLine("Is Symbol Primitive? " + symbol.IsPrimitiveType);
+                
                 if (symbol.IsPrimitiveType)
                 {
                     btnAddToWatchlist.IsEnabled = true;
-                    
-                }
-                else
-                {
-                    btnAddToWatchlist.IsEnabled = false;
+                    btnWriteSymbol.IsEnabled = true;
+                    UpdateSymbolDataWindow(symbol);
 
                 }
             }
@@ -246,28 +234,81 @@ namespace TwinCAT_GUI
 
         private void UpdateSymbolDataWindow(Symbol symbol)
         {
-            //populate data to the righthand window
-            TxtSymbolName.Text = symbol.InstanceName;
-            TxtSymbolSize.Text = symbol.Size.ToString();
-            TxtSymbolDatatype.Text = symbol.DataType.ToString();
-            TxtSymbolPeristence.Text = symbol.IsPersistent.ToString();
-            TxtSymbolComment.Text = symbol.Comment;
-            TxtSymbolValue.Text = symbol.ReadValue().ToString();
+           
+
+                //populate data to the righthand window
+                TxtSymbolName.Text = symbol.InstanceName;
+                TxtSymbolSize.Text = symbol.Size.ToString();
+                TxtSymbolDatatype.Text = symbol.DataType.ToString();
+                TxtSymbolPeristence.Text = symbol.IsPersistent.ToString();
+                TxtSymbolComment.Text = symbol.Comment;
+                TxtSymbolValue.Text = symbol.ReadValue().ToString();
+                TxtSymbolValueToWrite.Text = symbol.ReadValue().ToString();
+
+                if (symbol.IsReadOnly)
+                {
+                    TxtSymbolValueToWrite.IsEnabled = false;
+                }
+                else
+                {
+                    TxtSymbolValueToWrite.IsEnabled = true;
+                }
+           
         }
 
+        private void ClearSymbolDataWindow()
+        {
+            TxtSymbolName.Text = "";
+            TxtSymbolSize.Text = "";
+            TxtSymbolDatatype.Text = "";
+            TxtSymbolPeristence.Text = "";
+            TxtSymbolComment.Text = "";
+            TxtSymbolValue.Text = "";
+            TxtSymbolValueToWrite.Text = "";
 
+            btnAddToWatchlist.IsEnabled = false;
+            btnWriteSymbol.IsEnabled = false;
+        }
+
+        private void WriteSymbol(Symbol symbol, string value)
+        {
+
+            try
+            {
+                adsPLCRuntime.TryWriteValue(symbol, value);
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+
+            }
+            finally
+            {
+                UpdateSymbolDataWindow(symbol);
+            }
+        }
 
         private void TreeViewSymbols_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             //if the item is a primitive, allow the 'add to watchlist' button to be enabled
-            TreeUpdateUI(TreeViewSymbols.SelectedItem.ToString());
+
+            if (TreeViewSymbols.SelectedItem.GetType().BaseType == typeof(Object))
+            {
+                TreeUpdateUI(TreeViewSymbols.SelectedItem.ToString());
+                
+            }
+            else
+            {
+                ClearSymbolDataWindow();
+            }
+            
+            //
         }
 
 
         private uint RegisterNotification(Symbol mySymbol)
         {
             // Add the Notification event handler
-
             uint notificationHandle; //increments automatically if called more than once
 
             // Check for change every 200 ms
@@ -300,8 +341,6 @@ namespace TwinCAT_GUI
             Dispatcher.Invoke(action);
         }
 
-
-
         private void SymbolNotification(bool Enable)
         {
             //resumes and pauses the update of the ads notifications
@@ -319,6 +358,7 @@ namespace TwinCAT_GUI
 
         private void SetTCState(AdsClient adsClient,AdsState state)
         {
+            //Change ADS client states
             Debug.WriteLine("Setting " + (AmsPort)adsClient.Address.Port + " to state: " + state.ToString() );
             try
             {
@@ -351,10 +391,10 @@ namespace TwinCAT_GUI
         private void btnRemoveWatchlistItem_Click(object sender, RoutedEventArgs e)
         {
             
-            ListViewSymbolsWatchlist.Items.Remove(ListViewSymbolsWatchlist.SelectedItem);
+            ListViewSymbolsWatchlist.Items.Remove(ListViewSymbolsWatchlist.SelectedItem); //Remove from treeview
             SymbolListWatchItem SelectedSymbol = (SymbolListWatchItem)ListViewSymbolsWatchlist.SelectedItem;
             Debug.WriteLine("removing " + SelectedSymbol.SymbolPath + " from watchlist");
-            UnRegisterNotification(SelectedSymbol.SymbolHandle);
+            UnRegisterNotification(SelectedSymbol.SymbolHandle); //unsubscribe from events
 
         }
 
@@ -555,19 +595,15 @@ namespace TwinCAT_GUI
             SymbolNotification(true);
         }
 
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-        //for removal later
-
-        private void btnLogList_Click(object sender, RoutedEventArgs e)
+        private void btnWriteSymbol_Click(object sender, RoutedEventArgs e)
         {
+            //SymbolListWatchItem SelectedSymbol = (SymbolListWatchItem)ListViewSymbolsWatchlist.SelectedItem;
 
+            ISymbolLoader loader = SymbolLoaderFactory.Create(adsPLCRuntime, SymbolLoaderSettings.Default);
+
+            Symbol symbol = (Symbol)loader.Symbols[TreeViewSymbols.SelectedItem.ToString()];
+            Debug.WriteLine("Writing " + TxtSymbolValueToWrite.Text + " to " + symbol.InstancePath);
+            WriteSymbol(symbol, TxtSymbolValueToWrite.Text);
         }
-
-        private void btnLogDebug_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
     }
 }
