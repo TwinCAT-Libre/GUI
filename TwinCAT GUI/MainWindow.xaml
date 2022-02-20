@@ -238,13 +238,9 @@
                         </Grid>
                     </ItemsPanelTemplate>
                 </StatusBar.ItemsPanel>
-                <StatusBarItem>
-                    <TextBlock Text="Local AMS: Not Found" />
-                </StatusBarItem>
+                <StatusBarItem/>
                 <Separator Grid.Column="1" />
-                <StatusBarItem Grid.Column="2">
-                    <TextBlock Text="Target AMS: Not Found" />
-                </StatusBarItem>
+                <StatusBarItem Grid.Column="2"/>
                 <Separator Grid.Column="3" />
             </StatusBar>
             <TabControl Background="#FFF0F0F0" BorderThickness="0,1,0,0">
