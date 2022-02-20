@@ -222,15 +222,19 @@ namespace TwinCAT_GUI
             ISymbolLoader loader = SymbolLoaderFactory.Create(adsPLCRuntime, SymbolLoaderSettings.Default);
             try
             {
+                
                 Symbol symbol = (Symbol)loader.Symbols[symbolstr];
                 // Debug.WriteLine(symbol.ReadValue());
+                UpdateSymbolDataWindow(symbol);
                 if (symbol.IsPrimitiveType)
                 {
                     btnAddToWatchlist.IsEnabled = true;
+                    
                 }
                 else
                 {
                     btnAddToWatchlist.IsEnabled = false;
+
                 }
             }
             catch (Exception err)
@@ -238,9 +242,17 @@ namespace TwinCAT_GUI
                 Debug.WriteLine(err.Message);
                 btnAddToWatchlist.IsEnabled = false;
             }
+        }
 
-
-
+        private void UpdateSymbolDataWindow(Symbol symbol)
+        {
+            //populate data to the righthand window
+            TxtSymbolName.Text = symbol.InstanceName;
+            TxtSymbolSize.Text = symbol.Size.ToString();
+            TxtSymbolDatatype.Text = symbol.DataType.ToString();
+            TxtSymbolPeristence.Text = symbol.IsPersistent.ToString();
+            TxtSymbolComment.Text = symbol.Comment;
+            TxtSymbolValue.Text = symbol.ReadValue().ToString();
         }
 
 
@@ -249,7 +261,6 @@ namespace TwinCAT_GUI
         {
             //if the item is a primitive, allow the 'add to watchlist' button to be enabled
             TreeUpdateUI(TreeViewSymbols.SelectedItem.ToString());
-            //PopulateSymbolInfo();
         }
 
 
@@ -498,7 +509,7 @@ namespace TwinCAT_GUI
             }
             else
             {
-                Debug.WriteLine("System Service in Config state, Disabling PLC contol buttons");
+                Debug.WriteLine("   System Service in Config state, Disabling PLC contol buttons");
                 btnToolbarPLCStart.Foreground = Brushes.Gray;
                 btnToolbarPLCStart.IsEnabled = false;
                 btnToolbarPLCStart.Background = Brushes.Transparent;
