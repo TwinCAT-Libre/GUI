@@ -16,5 +16,5 @@ GUI for interacting with Beckhoff PLCs, with a basic watchlist and control of th
 * Custom port connection
 
 ## Far Future
-* Port to UWP
+* Port to UWP/WinUI 3
 
